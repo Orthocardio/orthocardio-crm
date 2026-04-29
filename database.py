@@ -6,19 +6,20 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
 
-# [FIX] Codificación segura para contraseñas con @ o *
-if "@" in DATABASE_URL and ":" in DATABASE_URL:
+# [FIX ULTIMATE] Codificación robusta
+if "@" in DATABASE_URL and "://" in DATABASE_URL:
     try:
-        # Extraer partes para codificar solo el password
-        prefix, rest = DATABASE_URL.split("://", 1)
-        auth, host_path = rest.split("@", 1)
+        scheme, rest = DATABASE_URL.split("://", 1)
+        auth, host_port_db = rest.rsplit("@", 1) # Usar rsplit para manejar @ en password
         user, password = auth.split(":", 1)
         encoded_password = urllib.parse.quote_plus(password)
-        DATABASE_URL = f"{prefix}://{user}:{encoded_password}@{host_path}"
-    except:
-        pass
+        DATABASE_URL = f"{scheme}://{user}:{encoded_password}@{host_port_db}"
+    except Exception as e:
+        print(f"Error parseando URL: {e}")
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
