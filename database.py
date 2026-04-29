@@ -21,7 +21,21 @@ if "@" in DATABASE_URL and "://" in DATABASE_URL:
     except Exception as e:
         print(f"Error parseando URL: {e}")
 
-connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+# [FIX NETWORK] Parámetros obligatorios para Supabase en Render
+if "supabase.co" in DATABASE_URL:
+    if "sslmode" not in DATABASE_URL:
+        separator = "&" if "?" in DATABASE_URL else "?"
+        DATABASE_URL += f"{separator}sslmode=require"
+    
+    # Forzar puerto de Transaction Pooler si es necesario
+    if ":5432" in DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.replace(":5432", ":6543")
+
+connect_args = {
+    "check_same_thread": False,
+} if DATABASE_URL.startswith("sqlite") else {
+    "sslmode": "require"
+}
 
 try:
     engine = create_engine(DATABASE_URL, connect_args=connect_args)
