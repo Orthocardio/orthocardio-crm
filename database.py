@@ -34,10 +34,12 @@ if "supabase.co" in DATABASE_URL:
     if ":5432" in DATABASE_URL:
         DATABASE_URL = DATABASE_URL.replace(":5432", ":6543")
 
-connect_args = {
-    "check_same_thread": False,
-    "sslmode": "require"
-}
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+else:
+    # Para PostgreSQL en Render/Supabase
+    connect_args["sslmode"] = "require"
 
 try:
     engine = create_engine(DATABASE_URL, connect_args=connect_args)
@@ -45,8 +47,8 @@ try:
     Base = declarative_base()
 except Exception as e:
     print(f"ERROR CRÍTICO DE BASE DE DATOS: {e}")
-    # Fallback a SQLite temporal para evitar crash del búnker
-    engine = create_engine("sqlite:///./fallback.db")
+    # Fallback a SQLite temporal para evitar crash total si la red falla
+    engine = create_engine("sqlite:///./fallback.db", connect_args={"check_same_thread": False})
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base = declarative_base()
 
