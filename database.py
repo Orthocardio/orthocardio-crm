@@ -23,24 +23,20 @@ if "@" in DATABASE_URL and "://" in DATABASE_URL:
 
 # [FIX NETWORK] Parámetros obligatorios para Supabase en Render
 if "supabase.co" in DATABASE_URL:
-    # Forzar el uso de IPv4 usando el endpoint alternativo si es necesario
-    # o simplemente asegurando sslmode
+    # Si el host original falla por IPv6, usamos el pooler que es más estable en Render
+    DATABASE_URL = DATABASE_URL.replace("db.iixogvvlzgfsgvzmacqf.supabase.co", "aws-0-us-east-1.pooler.supabase.com")
+    
     if "sslmode" not in DATABASE_URL:
         separator = "&" if "?" in DATABASE_URL else "?"
         DATABASE_URL += f"{separator}sslmode=require"
     
-    # Supabase a veces requiere el puerto 5432 para IPv4 directo 
-    # o 6543 para pooling. Si el 6543 falló con unreachable, probamos 5432 con SSL.
-    if ":6543" in DATABASE_URL:
-         DATABASE_URL = DATABASE_URL.replace(":6543", ":5432")
+    # El pooler de Supabase SIEMPRE usa el puerto 6543
+    if ":5432" in DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.replace(":5432", ":6543")
 
 connect_args = {
     "check_same_thread": False,
-    "sslmode": "require",
-    "connect_timeout": 10
-} if DATABASE_URL.startswith("sqlite") else {
-    "sslmode": "require",
-    "connect_timeout": 10
+    "sslmode": "require"
 }
 
 try:
