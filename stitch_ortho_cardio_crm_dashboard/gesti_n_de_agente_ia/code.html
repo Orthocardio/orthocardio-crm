@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ortho-Cardio | AI Management Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#353534",
+                    "primary": "#acc7ff",
+                    "on-tertiary-fixed": "#410007",
+                    "surface-container": "#201f1f",
+                    "on-primary": "#002f67",
+                    "primary-fixed-dim": "#acc7ff",
+                    "tertiary-fixed-dim": "#ffb3b1",
+                    "on-tertiary": "#680011",
+                    "surface-container-high": "#2a2a2a",
+                    "surface": "#131313",
+                    "on-primary-container": "#bbd0ff",
+                    "secondary-fixed": "#d6e3ff",
+                    "surface-bright": "#393939",
+                    "on-surface-variant": "#c2c6d4",
+                    "on-secondary": "#233148",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-background": "#e5e2e1",
+                    "secondary": "#b9c7e4",
+                    "on-error-container": "#ffdad6",
+                    "inverse-primary": "#115cb9",
+                    "on-tertiary-fixed-variant": "#92001c",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#ffdad8",
+                    "primary-fixed": "#d7e2ff",
+                    "surface-variant": "#353534",
+                    "on-tertiary-container": "#ffc1bf",
+                    "surface-tint": "#acc7ff",
+                    "on-secondary-container": "#abb9d6",
+                    "outline-variant": "#424752",
+                    "on-surface": "#e5e2e1",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed-dim": "#b9c7e4",
+                    "primary-container": "#0056b3",
+                    "surface-dim": "#131313",
+                    "on-secondary-fixed": "#0d1c32",
+                    "background": "#131313",
+                    "on-secondary-fixed-variant": "#39475f",
+                    "secondary-container": "#3c4962",
+                    "tertiary": "#ffb3b1",
+                    "on-error": "#690005",
+                    "on-primary-fixed": "#001a40",
+                    "inverse-surface": "#e5e2e1",
+                    "tertiary-container": "#b30b27",
+                    "outline": "#8c909e",
+                    "on-primary-fixed-variant": "#004491",
+                    "inverse-on-surface": "#313030"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "sm": "8px",
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "margin": "32px",
+                    "xl": "48px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "h1": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "h3": ["Inter"],
+                    "h2": ["Inter"],
+                    "metadata": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "metadata": ["12px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Hide scrollbar for a cleaner canvas */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 4px; }
+        
+        /* Custom Input Underline focus logic to override default forms plugin */
+        .recessed-input:focus {
+            border-bottom-width: 2px !important;
+            border-bottom-color: #0056b3 !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex flex-col antialiased">
+<!-- TopNavBar (Shared Component) -->
+<nav class="bg-[#121212] font-['Inter'] antialiased docked full-width top-0 z-50 border-b border-[#1a1a1a] shadow-[0_10px_30px_-15px_rgba(10,25,47,0.4)] flex justify-between items-center px-8 h-16 w-full fixed">
+<div class="text-xl font-bold tracking-tight text-white">Ortho-Cardio</div>
+<div class="flex items-center gap-lg">
+<!-- Search Bar (on_right logic) -->
+<div class="relative hidden md:block w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
+<input class="w-full bg-[#1a1a1a] border-none text-white pl-10 pr-4 py-1.5 focus:outline-none focus:ring-0 focus:border-b-2 focus:border-[#0056b3] transition-all rounded-none text-sm placeholder-gray-500" placeholder="Search data..." type="text"/>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-sm text-[#0056b3]">
+<button class="hover:bg-[#1a1a1a] transition-colors duration-200 ease-in-out p-2 rounded flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="hover:bg-[#1a1a1a] transition-colors duration-200 ease-in-out p-2 rounded flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<button class="hover:bg-[#1a1a1a] transition-colors duration-200 ease-in-out p-2 rounded flex items-center justify-center">
+<img alt="Executive Profile" class="w-7 h-7 rounded-full object-cover" data-alt="A professional headshot of a male medical executive in a sleek, dimly lit corporate environment. The lighting is dramatic and clinical, with subtle blue rim light emphasizing authority and precision. The overall aesthetic matches a high-end corporate minimalism style with deep navy and charcoal tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA32iAZSJVq03z_XUIJI7rxUwLQlkDWuA930F4zAT2ztFVsz5KeFOUgf8y8c8c8qxjKSpwh7WkYGXJ1-pZbgkNU8HBjAavWvJT39RmptWPAUoFkz1otzRAn9QNv4knQo-4eaDFugXH6JbDV8MTevxgtX2NvmDBm8qZL7dqUsYZyvuam46QWTWCgdI-idYmOFqiOfOQqRn6DardBrf0k9BmpHEgSMTHIhR8PlmUT8CCxG1S1WyLRReYkmLgxS9dfNG1hIvoTpEsXd10O"/>
+</button>
+</div>
+</div>
+</nav>
+<div class="flex flex-1 pt-16">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-[#1a1a1a] font-['Inter'] text-sm tracking-wide fixed left-0 top-16 h-[calc(100vh-64px)] w-[280px] shadow-2xl shadow-[#0a192f]/40 flex flex-col py-6 px-4 gap-2 z-40">
+<!-- Header section -->
+<div class="flex items-center gap-4 px-2 mb-8">
+<div class="w-10 h-10 rounded bg-[#121212] flex items-center justify-center text-[#0056b3] border border-[#242424]">
+<span class="material-symbols-outlined">vital_signs</span>
+</div>
+<div>
+<h2 class="text-xs font-black uppercase text-gray-500 tracking-wider">CRM CONSOLE</h2>
+<p class="text-[11px] text-gray-400 mt-0.5">Clinical Precision</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1">
+<!-- Multi-Channel Chat (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">forum</span>
+<span>Multi-Channel Chat</span>
+</a>
+<!-- Sales Pipeline (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">view_kanban</span>
+<span>Sales Pipeline</span>
+</a>
+<!-- Product Catalog (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span>Product Catalog</span>
+</a>
+<!-- AI Management (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#0056b3]/10 text-[#0056b3] font-semibold transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span>AI Management</span>
+</a>
+<!-- System Analytics (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<span>System Analytics</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[280px] p-margin overflow-y-auto bg-background">
+<header class="mb-xl flex justify-between items-end">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-2">AI Agent Configuration</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage autonomous interaction logic across patient and provider channels.</p>
+</div>
+<div class="flex gap-md">
+<button class="font-label-caps text-label-caps text-primary-container px-6 py-3 rounded hover:bg-surface-container transition-colors">DISCARD CHANGES</button>
+<button class="font-label-caps text-label-caps bg-primary-container text-white px-6 py-3 rounded hover:bg-inverse-primary transition-colors shadow-[0_4px_14px_0_rgba(0,86,179,0.39)]">DEPLOY UPDATES</button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Channel Activation Card (Span 8) -->
+<section class="col-span-12 lg:col-span-8 bg-surface-container-low rounded-xl p-lg shadow-[0_20px_40px_-15px_rgba(10,25,47,0.3)] flex flex-col">
+<div class="mb-lg">
+<h2 class="font-h3 text-h3 text-on-surface">Channel Orchestration</h2>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1">Enable or disable AI intervention per communication vector.</p>
+</div>
+<div class="flex flex-col gap-4 flex-1">
+<!-- WhatsApp Row -->
+<div class="flex items-center justify-between p-4 bg-surface rounded-lg border border-transparent hover:border-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-[#0a192f] flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">WhatsApp Business API</h3>
+<p class="font-metadata text-metadata text-on-surface-variant">Patient inquiries &amp; basic scheduling</p>
+</div>
+</div>
+<!-- Active Toggle -->
+<div class="w-[44px] h-[24px] bg-primary-container rounded-full relative cursor-pointer flex items-center px-[2px] transition-colors shadow-inner">
+<div class="w-[20px] h-[20px] bg-white rounded-full absolute right-[2px] transition-transform"></div>
+</div>
+</div>
+<!-- Web Portal Row -->
+<div class="flex items-center justify-between p-4 bg-surface rounded-lg border border-transparent hover:border-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-[#0a192f] flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">language</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">Physician Web Portal</h3>
+<p class="font-metadata text-metadata text-on-surface-variant">Inventory requests &amp; case documentation</p>
+</div>
+</div>
+<!-- Active Toggle -->
+<div class="w-[44px] h-[24px] bg-primary-container rounded-full relative cursor-pointer flex items-center px-[2px] transition-colors shadow-inner">
+<div class="w-[20px] h-[20px] bg-white rounded-full absolute right-[2px] transition-transform"></div>
+</div>
+</div>
+<!-- Instagram Row -->
+<div class="flex items-center justify-between p-4 bg-surface rounded-lg border border-transparent hover:border-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">photo_camera</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">Instagram Direct</h3>
+<p class="font-metadata text-metadata text-on-surface-variant">General marketing inquiries</p>
+</div>
+</div>
+<!-- Inactive Toggle -->
+<div class="w-[44px] h-[24px] bg-[#242424] rounded-full relative cursor-pointer flex items-center px-[2px] transition-colors">
+<div class="w-[20px] h-[20px] bg-white rounded-full absolute left-[2px] transition-transform"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Persona & Tone (Span 4) -->
+<section class="col-span-12 lg:col-span-4 bg-surface-container-low rounded-xl p-lg shadow-[0_20px_40px_-15px_rgba(10,25,47,0.3)] flex flex-col relative overflow-hidden">
+<!-- Subtle background texture -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at top right, #0056b3 0%, transparent 60%);"></div>
+<div class="mb-lg relative z-10">
+<h2 class="font-h3 text-h3 text-on-surface">Response Persona</h2>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1">Linguistic constraints for medical contexts.</p>
+</div>
+<div class="flex-1 flex flex-col gap-4 relative z-10">
+<div class="p-4 bg-[#0a192f] rounded-lg border-l-2 border-primary-container">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary-container text-[16px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-caps text-label-caps text-primary-container">ACTIVE PROFILE</span>
+</div>
+<h4 class="font-body-lg text-body-lg text-white mb-1">Strictly Clinical</h4>
+<p class="font-metadata text-metadata text-on-secondary-container">No colloquialisms, no emojis. Prioritizes exact medical terminology and definitive disclaimers.</p>
+</div>
+<div class="mt-auto pt-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-2">CONFIDENCE THRESHOLD</label>
+<div class="flex items-center gap-4">
+<div class="flex-1 h-1 bg-[#242424] rounded-full relative">
+<div class="absolute left-0 top-0 h-full w-[95%] bg-primary-container rounded-full"></div>
+<div class="absolute left-[95%] top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(0,86,179,0.5)]"></div>
+</div>
+<span class="font-body-sm text-body-sm text-white">95%</span>
+</div>
+<p class="font-metadata text-metadata text-on-surface-variant mt-2 text-right">Requires high certainty before responding.</p>
+</div>
+</div>
+</section>
+<!-- Operating Parameters (Span 6) -->
+<section class="col-span-12 lg:col-span-6 bg-surface-container-low rounded-xl p-lg shadow-[0_20px_40px_-15px_rgba(10,25,47,0.3)]">
+<div class="mb-lg flex items-center justify-between">
+<div>
+<h2 class="font-h3 text-h3 text-on-surface">Operating Parameters</h2>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1">Autonomous scheduled availability.</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">schedule</span>
+</div>
+<div class="grid grid-cols-2 gap-md mb-6">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant">START TIME (EST)</label>
+<input class="recessed-input bg-surface-container-highest text-on-surface font-body-sm text-body-sm px-4 py-3 border-none border-b-2 border-transparent transition-all rounded" type="text" value="00:00"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant">END TIME (EST)</label>
+<input class="recessed-input bg-surface-container-highest text-on-surface font-body-sm text-body-sm px-4 py-3 border-none border-b-2 border-transparent transition-all rounded" type="text" value="23:59"/>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface rounded">
+<span class="material-symbols-outlined text-primary-container">info</span>
+<p class="font-metadata text-metadata text-on-surface-variant">Currently configured for 24/7 continuous operation for critical inventory requests.</p>
+</div>
+</section>
+<!-- Handoff Protocol (Span 6) -->
+<section class="col-span-12 lg:col-span-6 bg-surface-container-low rounded-xl p-lg shadow-[0_20px_40px_-15px_rgba(10,25,47,0.3)]">
+<div class="mb-lg">
+<h2 class="font-h3 text-h3 text-on-surface">Escalation Triggers</h2>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1">Conditions forcing immediate human representative hand-off.</p>
+</div>
+<div class="flex flex-col gap-unit">
+<!-- Rule 1 -->
+<div class="flex items-center justify-between py-3 px-4 bg-surface rounded">
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-error bg-error/10 px-2 py-1 rounded">KEYWORD</span>
+<span class="font-body-sm text-body-sm text-on-surface">"AOG" OR "Critical Shortage"</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] cursor-pointer hover:text-white transition-colors">close</span>
+</div>
+<!-- Rule 2 -->
+<div class="flex items-center justify-between py-3 px-4 bg-surface rounded">
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-[#d6e3ff] bg-[#d6e3ff]/10 px-2 py-1 rounded">SENTIMENT</span>
+<span class="font-body-sm text-body-sm text-on-surface">Frustration &gt; 0.8 OR Anger</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] cursor-pointer hover:text-white transition-colors">close</span>
+</div>
+<!-- Rule 3 -->
+<div class="flex items-center justify-between py-3 px-4 bg-surface rounded">
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-primary-container bg-primary-container/10 px-2 py-1 rounded">COMPLEXITY</span>
+<span class="font-body-sm text-body-sm text-on-surface">Multi-SKU Surgical Kit Assembly</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] cursor-pointer hover:text-white transition-colors">close</span>
+</div>
+</div>
+<button class="mt-4 font-label-caps text-label-caps text-primary-container flex items-center gap-2 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[16px]">add</span> ADD NEW TRIGGER
+                    </button>
+</section>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ortho-Cardio CRM Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#353534",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-container": "#ffc1bf",
+                        "inverse-primary": "#115cb9",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad8",
+                        "on-tertiary-fixed-variant": "#92001c",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#b9c7e4",
+                        "on-background": "#e5e2e1",
+                        "on-surface-variant": "#c2c6d4",
+                        "surface-bright": "#393939",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#233148",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-container": "#bbd0ff",
+                        "primary-fixed-dim": "#acc7ff",
+                        "on-tertiary": "#680011",
+                        "tertiary-fixed-dim": "#ffb3b1",
+                        "on-tertiary-fixed": "#410007",
+                        "primary": "#acc7ff",
+                        "surface-container-highest": "#353534",
+                        "on-primary": "#002f67",
+                        "surface-container": "#201f1f",
+                        "on-primary-fixed-variant": "#004491",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-container": "#b30b27",
+                        "inverse-surface": "#e5e2e1",
+                        "outline": "#8c909e",
+                        "tertiary": "#ffb3b1",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#001a40",
+                        "on-secondary-fixed-variant": "#39475f",
+                        "secondary-container": "#3c4962",
+                        "surface-dim": "#131313",
+                        "primary-container": "#0056b3",
+                        "on-secondary-fixed": "#0d1c32",
+                        "background": "#131313",
+                        "on-surface": "#e5e2e1",
+                        "outline-variant": "#424752",
+                        "secondary-fixed-dim": "#b9c7e4",
+                        "surface-container-low": "#1c1b1b",
+                        "on-secondary-container": "#abb9d6",
+                        "surface-tint": "#acc7ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "48px",
+                        "margin": "32px",
+                        "xs": "4px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "sm": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "metadata": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "metadata": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-sm h-screen overflow-hidden flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-[#121212] docked full-width top-0 z-50 border-b border-[#1a1a1a] shadow-[0_10px_30px_-15px_rgba(10,25,47,0.4)] flex justify-between items-center px-8 h-16 w-full flex-shrink-0">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-white font-h3">Ortho-Cardio</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-gray-400 hover:text-white transition-colors duration-200 ease-in-out cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white transition-colors duration-200 ease-in-out cursor-pointer">settings</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white transition-colors duration-200 ease-in-out cursor-pointer" data-alt="Executive Profile">account_circle</span>
+</div>
+</nav>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-[#1a1a1a] shadow-2xl shadow-[#0a192f]/40 flex flex-col py-6 px-4 gap-2 w-[280px] flex-shrink-0 h-full border-r border-surface-container overflow-y-auto">
+<div class="mb-6 px-2">
+<h2 class="font-label-caps text-xs font-black uppercase text-gray-500 mb-1">LEAD MANAGEMENT</h2>
+<p class="font-metadata text-gray-400">Clinical Precision</p>
+</div>
+<nav class="flex flex-col gap-1 flex-1">
+<!-- Tabs mapped from JSON -->
+<a class="flex items-center gap-3 px-3 py-2 bg-[#0056b3]/10 text-[#0056b3] font-semibold rounded-DEFAULT transition-all duration-200 font-body-sm" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span>Incoming Leads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-400 hover:bg-[#0056b3]/5 hover:text-white rounded-DEFAULT transition-all duration-200 font-body-sm" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span>Active Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-400 hover:bg-[#0056b3]/5 hover:text-white rounded-DEFAULT transition-all duration-200 font-body-sm" href="#">
+<span class="material-symbols-outlined">local_hospital</span>
+<span>Hospital Directory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-400 hover:bg-[#0056b3]/5 hover:text-white rounded-DEFAULT transition-all duration-200 font-body-sm" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Inventory Sync</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-400 hover:bg-[#0056b3]/5 hover:text-white rounded-DEFAULT transition-all duration-200 font-body-sm" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span>Analytics</span>
+</a>
+</nav>
+<!-- Specific Leads List from Prompt -->
+<div class="mt-8">
+<h3 class="font-label-caps text-on-surface-variant mb-2 px-2">RECENT LEADS</h3>
+<div class="flex flex-col gap-1">
+<button class="text-left px-3 py-3 rounded-DEFAULT hover:bg-surface-container transition-colors group">
+<div class="font-label-caps text-on-surface group-hover:text-primary-container transition-colors mb-1">Dr. Alejandro Méndez</div>
+<div class="font-metadata text-outline">Hospital ABC Santa Fe</div>
+</button>
+<button class="text-left px-3 py-3 rounded-DEFAULT hover:bg-surface-container transition-colors group">
+<div class="font-label-caps text-on-surface group-hover:text-primary-container transition-colors mb-1">Dra. Sofía Valdés</div>
+<div class="font-metadata text-outline">Médica Sur</div>
+</button>
+<button class="text-left px-3 py-3 rounded-DEFAULT hover:bg-surface-container transition-colors group">
+<div class="font-label-caps text-on-surface group-hover:text-primary-container transition-colors mb-1">Paciente Roberto Ruiz</div>
+<div class="font-metadata text-outline">Hospital Ángeles</div>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col bg-background relative overflow-hidden h-full">
+<!-- Chat Header -->
+<header class="flex items-center justify-between px-margin py-lg border-b border-surface-container bg-surface flex-shrink-0">
+<div class="flex flex-col">
+<h1 class="font-h2 text-on-surface">Prospecto: Dr. Alejandro Méndez</h1>
+<span class="font-metadata text-outline mt-1">Hospital ABC Santa Fe</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-outline">MODO IA / INTERVENCIÓN MANUAL</span>
+<button aria-pressed="false" class="w-10 h-5 rounded-full bg-[#242424] relative flex items-center transition-colors duration-300 focus:outline-none">
+<span class="w-4 h-4 bg-white rounded-full absolute left-[2px] transition-transform duration-300"></span>
+</button>
+</div>
+</header>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto px-margin py-xl flex flex-col gap-lg">
+<!-- Client Message (External) -->
+<div class="flex w-full justify-start">
+<div class="max-w-[70%] bg-[#1a1a1a] rounded-lg p-md">
+<p class="font-body-lg text-on-surface">Buen día, solicito cotización de sets de placas de titanio.</p>
+<div class="font-metadata text-outline mt-2 text-left">10:42 AM</div>
+</div>
+</div>
+<!-- AI Message (System) -->
+<div class="flex w-full justify-start">
+<div class="max-w-[70%] bg-[#1a1a1a] border border-[#0056b3]/20 rounded-lg p-md relative">
+<div class="absolute -top-3 left-4 bg-background px-2">
+<span class="font-label-caps text-primary-container flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+                                AI ASSISTANT
+                            </span>
+</div>
+<p class="font-body-lg text-on-surface mt-2">Hola Dr. Méndez, proceso su solicitud de inmediato. ¿Alguna especificación técnica?</p>
+<div class="font-metadata text-outline mt-2 text-left">10:42 AM</div>
+</div>
+</div>
+<!-- Executive Message (Internal) -->
+<div class="flex w-full justify-end">
+<div class="max-w-[70%] bg-[#0a192f] rounded-lg p-md">
+<p class="font-body-lg text-on-surface">He recibido la notificación. Estoy revisando el inventario actual.</p>
+<div class="font-metadata text-outline mt-2 text-right">10:45 AM</div>
+</div>
+</div>
+</div>
+<!-- Bottom Input -->
+<div class="p-margin border-t border-surface-container bg-surface flex-shrink-0">
+<div class="flex items-end gap-md bg-[#121212] p-2 rounded-lg border border-surface-container focus-within:border-[#0056b3] transition-colors">
+<textarea class="flex-1 bg-transparent border-none text-on-surface font-body-lg resize-none focus:ring-0 placeholder:text-outline p-2 min-h-[44px] max-h-[120px]" placeholder="Escribir mensaje..." rows="1"></textarea>
+<button class="bg-[#0056b3] text-white font-label-caps px-6 py-3 rounded-DEFAULT hover:bg-[#004491] transition-colors mb-1 h-[44px] flex items-center justify-center">
+                        ENVIAR
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

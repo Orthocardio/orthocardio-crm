@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ortho-Cardio - Product Database</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#353534",
+                      "primary": "#acc7ff",
+                      "on-tertiary-fixed": "#410007",
+                      "surface-container": "#201f1f",
+                      "on-primary": "#002f67",
+                      "primary-fixed-dim": "#acc7ff",
+                      "tertiary-fixed-dim": "#ffb3b1",
+                      "on-tertiary": "#680011",
+                      "surface-container-high": "#2a2a2a",
+                      "surface": "#131313",
+                      "on-primary-container": "#bbd0ff",
+                      "secondary-fixed": "#d6e3ff",
+                      "surface-bright": "#393939",
+                      "on-surface-variant": "#c2c6d4",
+                      "on-secondary": "#233148",
+                      "error": "#ffb4ab",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-background": "#e5e2e1",
+                      "secondary": "#b9c7e4",
+                      "on-error-container": "#ffdad6",
+                      "inverse-primary": "#115cb9",
+                      "on-tertiary-fixed-variant": "#92001c",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#ffdad8",
+                      "primary-fixed": "#d7e2ff",
+                      "surface-variant": "#353534",
+                      "on-tertiary-container": "#ffc1bf",
+                      "surface-tint": "#acc7ff",
+                      "on-secondary-container": "#abb9d6",
+                      "outline-variant": "#424752",
+                      "on-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "secondary-fixed-dim": "#b9c7e4",
+                      "primary-container": "#0056b3",
+                      "surface-dim": "#131313",
+                      "on-secondary-fixed": "#0d1c32",
+                      "background": "#131313",
+                      "on-secondary-fixed-variant": "#39475f",
+                      "secondary-container": "#3c4962",
+                      "tertiary": "#ffb3b1",
+                      "on-error": "#690005",
+                      "on-primary-fixed": "#001a40",
+                      "inverse-surface": "#e5e2e1",
+                      "tertiary-container": "#b30b27",
+                      "outline": "#8c909e",
+                      "on-primary-fixed-variant": "#004491",
+                      "inverse-on-surface": "#313030"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "sm": "8px",
+                      "unit": "4px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "margin": "32px",
+                      "xl": "48px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "h1": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "h3": ["Inter"],
+                      "h2": ["Inter"],
+                      "metadata": ["Inter"]
+              },
+              "fontSize": {
+                      "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                      "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}],
+                      "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "metadata": ["12px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #424752;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-lg text-body-lg antialiased overflow-x-hidden">
+<!-- TopNavBar Shared Component -->
+<nav class="fixed top-0 z-50 flex justify-between items-center px-8 h-16 w-full bg-[#121212] font-['Inter'] antialiased border-b border-[#1a1a1a] shadow-[0_10px_30px_-15px_rgba(10,25,47,0.4)]">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-white">Ortho-Cardio</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
+<input class="bg-[#1a1a1a] text-gray-200 border-none rounded-full py-1.5 pl-10 pr-4 w-64 text-sm focus:outline-none focus:ring-1 focus:ring-[#0056b3] transition-colors" placeholder="Global Search..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-gray-400 hover:bg-[#1a1a1a] transition-colors duration-200 ease-in-out p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-gray-400 hover:bg-[#1a1a1a] transition-colors duration-200 ease-in-out p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-gray-400 hover:bg-[#1a1a1a] transition-colors duration-200 ease-in-out p-1 rounded-full flex items-center justify-center">
+<img alt="Executive Profile" class="w-8 h-8 rounded-full border border-[#1a1a1a]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk7o092rW0dCUqGiCcG91NqIMzHLHnm_qpFhmbmu5dnjRGefTYSIMBU2MVpe0juaTS_ZXsnu885VtAwQX1YGX1sURhMEOTnSI3HY0zdYT-j1DOPMx-xkYArcsD6bzXXcmLsYqJvDiY-qY2eiBEGYcY8s9MR1DM7ulq5NoO-P04fKU_8A2YInRWZEhkYPofZS3PkKlDTyQ6Erj31J1TeJCz89WwmQ3hn1_MtJ2cpA9cR9QxBa4AKtL8dMGAgS7nDGiHR9LG_l5cIEsQ"/>
+</button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar Shared Component -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-[280px] bg-[#1a1a1a] font-['Inter'] text-sm tracking-wide shadow-2xl shadow-[#0a192f]/40 flex flex-col py-6 px-4 gap-2 z-40">
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="w-8 h-8 bg-[#121212] rounded flex items-center justify-center border border-[#242424]">
+<span class="material-symbols-outlined text-[#0056b3] text-[18px]">medical_services</span>
+</div>
+<div>
+<h2 class="text-xs font-black uppercase text-gray-500 tracking-wider">CRM CONSOLE</h2>
+<p class="text-[10px] text-gray-400 font-medium">Clinical Precision</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">forum</span>
+<span>Multi-Channel Chat</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">view_kanban</span>
+<span>Sales Pipeline</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md bg-[#0056b3]/10 text-[#0056b3] font-semibold transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px] fill">inventory_2</span>
+<span>Product Catalog</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+<span>AI Management</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-400 hover:bg-[#0056b3]/5 hover:text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<span>System Analytics</span>
+</a>
+</nav>
+<div class="mt-auto px-3">
+<div class="pt-4 border-t border-[#242424]">
+<p class="text-[10px] uppercase tracking-widest text-gray-600 font-bold mb-2">Live Inventory Node</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+<span class="text-xs text-gray-400">Syncing with Central DB</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] pt-16 min-h-screen">
+<div class="p-margin max-w-[1600px] mx-auto">
+<!-- Page Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-lg mb-margin">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-sm">Product Database</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-2xl">
+                        Comprehensive registry of orthopedic and cardiovascular implant systems. Live inventory tracking across all hospital distribution nodes.
+                    </p>
+</div>
+<!-- Filters / Actions -->
+<div class="flex items-center gap-sm">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-[18px]">filter_list</span>
+<select class="appearance-none bg-surface-container-high text-on-surface font-body-sm text-body-sm py-sm pl-[32px] pr-lg border-none focus:ring-0 focus:border-b-2 focus:border-primary-container transition-all cursor-pointer">
+<option>All Categories</option>
+<option>Orthopedics</option>
+<option>Cardiovascular</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none group-hover:text-on-surface transition-colors">expand_more</span>
+</div>
+<button class="bg-primary-container text-white px-lg py-sm font-body-sm text-body-sm hover:brightness-110 transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        New Entry
+                    </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+<!-- Featured / Top Selling Product (Spans 2 cols) -->
+<article class="col-span-1 md:col-span-2 row-span-2 bg-surface-container rounded-xl overflow-hidden flex flex-col group relative transition-transform duration-300 hover:-translate-y-1">
+<div class="absolute top-md right-md z-10 flex gap-sm">
+<span class="bg-[#121212]/80 backdrop-blur-md text-on-surface font-label-caps text-label-caps px-sm py-unit rounded flex items-center gap-unit border border-[#2a2a2a]">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> IN STOCK
+                        </span>
+</div>
+<div class="h-64 bg-[#121212] relative overflow-hidden flex items-center justify-center p-lg">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent opacity-50 z-0"></div>
+<img class="max-h-full object-contain relative z-10 mix-blend-screen opacity-80 group-hover:opacity-100 transition-opacity duration-500" data-alt="A hyper-realistic, clinical 3D render of a titanium orthopedic hip replacement joint. The metallic surface reflects perfectly placed, stark white surgical lighting, emphasizing the micro-textures of the engineering. The background is a profound, pure black devoid of any distraction, perfectly aligning with a premium corporate minimalist UI aesthetic. The overall mood is sterile, highly advanced, and deeply focused on medical precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnnHtlO6gbNmHIortzh8-pzvdSrXq-K6kPAjhOOgfgH2AdfkllFRzTV8vLggdlUoHVdiGVsJzI_LbKP8cMCNLjDh28S-94T6Ho5DIHa2hp2rY_Lf0ENU1IpSVyePqaeg4E1Y1JCLVQyYeU9CqmTTV2FdZZoQhMOZp_kl5d0XSIb9CFLJh0pqziMdQKWGz6JkdCu0vfuBo74fWoH3jcAguIgdI7k1RFyXT5FpP8ILbg2cRROUiDojmVtG4vfGmEocMCAdXESFAJu9CB"/>
+</div>
+<div class="p-lg flex-1 flex flex-col justify-between bg-surface-container border-t border-[#2a2a2a]">
+<div>
+<div class="flex items-center gap-sm mb-unit text-primary font-metadata text-metadata">
+<span class="material-symbols-outlined text-[14px]">orthopedics</span>
+<span>SKU: T-FEM-8902</span>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface mb-sm">Titanium Femoral Stem System</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                                Advanced porous-coated titanium alloy stem designed for uncemented biological fixation. Features optimized geometry for rotational stability.
+                            </p>
+</div>
+<div class="mt-lg flex items-center justify-between">
+<div class="flex gap-lg">
+<div>
+<p class="font-label-caps text-label-caps text-outline-variant mb-unit">MATERIAL</p>
+<p class="font-body-sm text-body-sm text-on-surface">Ti-6Al-4V</p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-outline-variant mb-unit">INVENTORY</p>
+<p class="font-body-sm text-body-sm text-on-surface">1,204 Units</p>
+</div>
+</div>
+<button class="text-primary hover:text-white transition-colors font-body-sm text-body-sm flex items-center gap-xs">
+                                Specs <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Standard Product Card 1 -->
+<article class="bg-surface-container rounded-xl overflow-hidden flex flex-col group transition-transform duration-300 hover:-translate-y-1">
+<div class="h-48 bg-surface-container-lowest relative overflow-hidden flex items-center justify-center p-md">
+<img class="max-h-full object-contain mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity duration-500" data-alt="A macroscopic, extreme close-up photograph of a microscopic cardiovascular stent structure. The delicate, interlaced metal wireframe is illuminated by a single, cool blue spotlight against a vast, deep charcoal void. The intricate geometry of the device is highlighted, showcasing a high-stakes, technologically supreme medical environment typical of a professional corporate minimalism design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWI_9lEWZn5LpXMEiHBXcwbP6UMi0E2YSZBTw7VzPFbUYwTY1JZU44cQl99FZ9VDCGt6ahNsuV-UCuoebK0bWfDxDMKrH-16c-Tav2snKKKAWH25sGKjDnxcH8MPweWrvVkWXhF5LhMof9ErhvXxkrI53sQTj3FpcnHULzmc1IFLDa1CHEiM-eILdK9yho10BsW3NgIMxahTu8HKLNjBCe0rlXt_azUQGcUMW3inxDfNyyp92Eno1g1PV08iFav6viJWeeagxHlodf"/>
+</div>
+<div class="p-md flex-1 flex flex-col border-t border-[#2a2a2a]">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-metadata text-metadata text-primary">SKU: C-STN-411</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500" title="In Stock"></span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-unit leading-tight">Drug-Eluting Coronary Stent</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-sm flex-1">
+                            Cobalt-chromium platform with ultra-thin struts for complex vessel anatomy navigation.
+                        </p>
+<div class="mt-md pt-md border-t border-[#2a2a2a] flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-outline">CARDIOVASCULAR</span>
+<span class="font-metadata text-metadata text-on-surface">Qty: 840</span>
+</div>
+</div>
+</article>
+<!-- Standard Product Card 2 -->
+<article class="bg-surface-container rounded-xl overflow-hidden flex flex-col group transition-transform duration-300 hover:-translate-y-1">
+<div class="h-48 bg-surface-container-lowest relative overflow-hidden flex items-center justify-center p-md">
+<img class="max-h-full object-contain mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity duration-500" data-alt="An abstract, high-contrast monochrome studio shot of several polyaxial pedicle screws arranged in a highly organized, grid-like pattern. The lighting is completely flat, producing no harsh shadows, but emphasizing the threaded textures of the surgical steel. The background is a muted, very dark grey, perfectly fitting a subdued, data-centric corporate minimalist dashboard. The mood is quiet and analytical." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCULiXIZIF7a71Ro5PCWLw4OM75ZB3-GxLyQEc0OvEJQmWJdv99cRKG0GlLwkqE-RG3g6Hs-98kVceifyejLxmZUfN8QezjBAnNN5zNgLmSxzQBS9nBbP0ewukleVI4ZJLEpLZzv8arXNAbIjJl5gFwWC_6-rp4mZ93zIUiM53R6Z5yKknrZr_Zq52jGnPQ_xpsJPQr36rVMUShRfTZNCxlIakV8DmwJBlb8jK5iuomUddtDevJHa57jhauzkn7l926MvEpK_36ht2r"/>
+</div>
+<div class="p-md flex-1 flex flex-col border-t border-[#2a2a2a]">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-metadata text-metadata text-primary">SKU: O-PDS-77X</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500" title="In Stock"></span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-unit leading-tight">Polyaxial Pedicle Screws</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-sm flex-1">
+                            Spinal fixation system offering 60-degree angulation for maximum intraoperative flexibility.
+                        </p>
+<div class="mt-md pt-md border-t border-[#2a2a2a] flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-outline">ORTHOPEDICS</span>
+<span class="font-metadata text-metadata text-on-surface">Qty: 3,450</span>
+</div>
+</div>
+</article>
+<!-- Standard Product Card 3 (Low Stock) -->
+<article class="bg-surface-container rounded-xl overflow-hidden flex flex-col group transition-transform duration-300 hover:-translate-y-1">
+<div class="h-48 bg-surface-container-lowest relative overflow-hidden flex items-center justify-center p-md">
+<img class="max-h-full object-contain mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity duration-500 grayscale" data-alt="A clinical, macro render of the distal tip of a pacemaker lead resting on a highly reflective, dark glass surface. A faint, singular pulse of blue light emanates from the electrode tip, providing the only color in the otherwise stark, grayscale composition. The deep black background and absence of physical borders create an ambient, floating aesthetic that strictly adheres to high-end medical software design principles." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgNpbYW3uvilSRSZZ43-pvCIvfx41eczEfhRs7IIKwBPS-WbD8nMWwct7FAxX1VnQw2D7nuIhw6Y4M0XdmCBfE-F95-qfsMTHltiHFiFr9jAyjcjZ2iEDBrffYzSq0SURh087auFgB7ryeqU3nkL4mcDQehSg39OK7Nt9XVjn0NXY-Cglyfba0SKTP81Dwfyjqe_-3cWZZ_4sSO1pb9_B464DQI5YMX-D7XdolNOYoCSQ08Rhk2hopbGoeS7XYhZASAZQnAZxMfdfS"/>
+</div>
+<div class="p-md flex-1 flex flex-col border-t border-[#2a2a2a]">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-metadata text-metadata text-primary">SKU: C-PML-002</span>
+<span class="w-1.5 h-1.5 rounded-full bg-error" title="Low Stock"></span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-unit leading-tight">Active Fixation Pacemaker Lead</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-sm flex-1">
+                            Steroid-eluting, bipolar pacing lead with a retractable helix for secure endocardial anchoring.
+                        </p>
+<div class="mt-md pt-md border-t border-[#2a2a2a] flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-outline">CARDIOVASCULAR</span>
+<span class="font-metadata text-metadata text-error font-medium">Qty: 12 (Critical)</span>
+</div>
+</div>
+</article>
+<!-- Standard Product Card 4 -->
+<article class="bg-surface-container rounded-xl overflow-hidden flex flex-col group transition-transform duration-300 hover:-translate-y-1">
+<div class="h-48 bg-surface-container-lowest relative overflow-hidden flex items-center justify-center p-md">
+<img class="max-h-full object-contain mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity duration-500" data-alt="A sterile, overhead photograph of a translucent bioabsorbable suture anchor laid out next to microscopic surgical instruments on a dark navy surgical drape. The lighting is diffused and even, emphasizing the subtle textures of the materials without causing glare. The composition is highly symmetrical and minimal, reflecting an environment of pure clinical utility and executive reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA479gywM0JcGY2nIeD1xawaGKWkvfPOLGMG-sldG8P8ndsgTUO0_uaofbIcxnIcwDGAhivMyL1mYLu_nFufVwxdRmqMi1GnIbDZ_n98S4o7gnfxx15aCE5n6ta-5_DZvgLcP7KnjlbqtYvNyhHwe6L4PSUu_4K1DLLS6ZnjjJ6h8q977lBUAjP8lGgb89z72HR1c3hXyo17FH6GeiLH1tdnDY5V7NXeEjtGSaIDcdg0D_rtsfCKWGy05C2Bb3syKc5Zj44QYsHdlyU"/>
+</div>
+<div class="p-md flex-1 flex flex-col border-t border-[#2a2a2a]">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-metadata text-metadata text-primary">SKU: O-ANC-99A</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500" title="In Stock"></span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-unit leading-tight">Bioabsorbable Suture Anchor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-sm flex-1">
+                           PLGA-based knotless anchor designed for rotator cuff and labral repairs. Fully degrades in 18 months.
+                       </p>
+<div class="mt-md pt-md border-t border-[#2a2a2a] flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-outline">ORTHOPEDICS</span>
+<span class="font-metadata text-metadata text-on-surface">Qty: 8,100</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+</body></html>
