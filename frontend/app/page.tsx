@@ -1,17 +1,15 @@
-import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
+import Sidebar from "@/components/Sidebar";
+import TopNavigation from "@/components/TopNavigation";
+import ChatArea from "@/components/ChatArea";
 
-export default async function Page() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { data: todos } = await supabase.from('todos').select()
-
+export default function Home() {
   return (
-    <ul>
-      {todos?.map((todo) => (
-        <li key={todo.id}>{todo.name}</li>
-      ))}
-    </ul>
-  )
+    <div className="h-screen flex flex-col overflow-hidden bg-background text-on-background font-inter">
+      <TopNavigation />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <ChatArea />
+      </div>
+    </div>
+  );
 }
