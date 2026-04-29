@@ -46,7 +46,14 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 SYSTEM_PROMPT = """Eres el agente clínico de Comercializadora Ortho-Cardio. Tu lenguaje es estrictamente médico, técnico y formal. Queda absolutamente prohibido el uso de emojis y frases coloquiales. Nunca des precios. Si solicitan cotización, pide Nombre completo, Especialidad y Hospital."""
 
 
-app = FastAPI(title="Ortho-Cardio Omnichannel CRM")
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
+limiter = Limiter(key_func=get_remote_address)
+app = FastAPI(title="Ortho-Cardio CRM Búnker Edition")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configuración de Frontend (Templates y Archivos Estáticos)
 # Asegurarse de que las carpetas existan
