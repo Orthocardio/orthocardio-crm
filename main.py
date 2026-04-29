@@ -55,8 +55,10 @@ app = FastAPI(title="Ortho-Cardio CRM Búnker Edition")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Configuración de Frontend (Templates y Archivos Estáticos)
-# Asegurarse de que las carpetas existan
+@app.get("/")
+async def root():
+    return HTMLResponse(content="<div style='background:#131313;color:#e5e2e1;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;'><h1>ORTHO-CARDIO BÚNKER</h1><p>Sistema de Gestión Omnicanal Online</p><a href='/privacy' style='color:#acc7ff;'>Ver Estado de Red</a></div>", status_code=200)
+
 os.makedirs("templates", exist_ok=True)
 os.makedirs("static", exist_ok=True)
 
