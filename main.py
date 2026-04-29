@@ -51,7 +51,27 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 limiter = Limiter(key_func=get_remote_address)
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
+
+security = HTTPBasic()
+
+def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
+    authorized_users = {
+        "carlos.cortes@ortho-cardio.com.mx": "Orthocardio2026",
+        "oscar.mendez@ortho-cardio.com.mx": "Orthocardio2026"
+    }
+    user = authorized_users.get(credentials.username)
+    if user and secrets.compare_digest(user, credentials.password):
+        return credentials.username
+    raise HTTPException(
+        status_code=401,
+        detail="Acceso Denegado: Credenciales Ortho-Cardio Inválidas",
+        headers={"WWW-Authenticate": "Basic"},
+    )
+
 app = FastAPI(title="Ortho-Cardio CRM Búnker Edition")
+
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
