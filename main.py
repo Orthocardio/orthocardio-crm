@@ -15,6 +15,12 @@ from dotenv import load_dotenv
 
 from database import engine, Base, get_db
 from models import Contact, Message
+from orchestrator import Orchestrator
+from pdf_generator import OrthoPDF
+
+# Inicializar componentes del enjambre
+orchestrator = Orchestrator(api_key=os.getenv("GEMINI_API_KEY"))
+pdf_engine = OrthoPDF()
 
 # Crear tablas en BD
 Base.metadata.create_all(bind=engine)
@@ -211,6 +217,30 @@ async def handle_whatsapp_message(body: Dict[Any, Any]):
 
                     # Procesar con IA solo si está activa
                     if contact.is_ai_active:
+                        # 1. Clasificación por Enjambre (Orquestador)
+                        import asyncio
+                        classification = await orchestrator.classify_intent(message_text)
+                        
+                        if classification.intent == "SOPORTE_HUMANO":
+                            contact.is_ai_active = False
+                            db.commit()
+                            await manager.broadcast({
+                                "type": "handoff",
+                                "phone_number": sender_id,
+                                "reason": classification.reasoning
+                            })
+                            # Notificar al usuario que un humano tomará el control
+                            handoff_msg = "He transferido su consulta a un ejecutivo de cuenta especializado. En breve se pondrán en contacto con usted."
+                            await send_whatsapp_message(phone_number_id, sender_id, handoff_msg)
+                            db.close()
+                            continue
+
+                        if classification.intent == "COTIZACION":
+                            # 2. Generación automática de PDF (Draft)
+                            pdf_path = pdf_engine.create_quote(contact.name, contact.hospital or "Por definir", [{"name": message_text, "qty": 1}])
+                            logger.info(f"Cotización técnica generada en: {pdf_path}")
+
+                        # 3. Generación de respuesta clínica especializada
                         gemini_response = generate_gemini_response(message_text)
                         if gemini_response:
                             # Guardar en BD la respuesta de IA
