@@ -9,10 +9,16 @@ if DATABASE_URL.startswith("postgres://"):
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
+try:
+    engine = create_engine(DATABASE_URL, connect_args=connect_args)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base = declarative_base()
+except Exception as e:
+    print(f"ERROR CRÍTICO DE BASE DE DATOS: {e}")
+    # Fallback a SQLite temporal para evitar crash del búnker
+    engine = create_engine("sqlite:///./fallback.db")
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
