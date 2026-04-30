@@ -42,7 +42,25 @@ try:
     Base.metadata.create_all(bind=engine)
     logger.info("Tablas de BD sincronizadas correctamente.")
 except Exception as e:
-    logger.warning(f"No se pudieron crear tablas al inicio (se reintentará en la primera petición): {e}")
+    logger.warning(f"No se pudieron crear tablas al inicio: {e}")
+
+# --- SEMILLA DE DATOS (Solo si está vacío) ---
+def seed_demo_data():
+    db = next(get_db())
+    try:
+        if db.query(Contact).count() == 0:
+            logger.info("Base de datos vacía. Generando contactos demo...")
+            demo_contacts = [
+                Contact(phone_number="521234567890", name="Dr. Alejandro Méndez", role="Cardiólogo", hospital="Hospital Ángeles", is_ai_active=True),
+                Contact(phone_number="529876543210", name="Dra. Sofía Reyes", role="Ortopedista", hospital="Centro Médico Siglo XXI", is_ai_active=False)
+            ]
+            db.add_all(demo_contacts)
+            db.commit()
+            logger.info("Contactos demo creados con éxito.")
+    except Exception as e:
+        logger.error(f"Error en semilla de datos: {e}")
+    finally:
+        db.close()
 
 
 
@@ -53,6 +71,10 @@ PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 ADMIN_NUMBERS = [os.getenv("ADMIN_NUMBER_1"), os.getenv("ADMIN_NUMBER_2")]
 
 app = FastAPI(title="Ortho-Cardio CRM Búnker API")
+
+@app.on_event("startup")
+async def startup_event():
+    seed_demo_data()
 
 # Configurar templates
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

@@ -27,8 +27,16 @@ function setupWebSocket() {
         }
     };
 
+    ws.onopen = () => {
+        console.log("Conectado al Búnker");
+        const dot = document.querySelector('.bg-green-500');
+        if (dot) dot.classList.add('animate-pulse');
+    };
+
     ws.onclose = () => {
         console.log("WebSocket disconnected. Reconnecting in 3s...");
+        const dot = document.querySelector('.bg-green-500');
+        if (dot) dot.classList.remove('animate-pulse');
         setTimeout(setupWebSocket, 3000);
     };
 }
@@ -36,10 +44,16 @@ function setupWebSocket() {
 async function loadContacts() {
     try {
         const res = await fetch('/api/contacts');
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const contacts = await res.json();
         
         const list = document.getElementById("contact-list");
         list.innerHTML = "";
+
+        if (!Array.isArray(contacts) || contacts.length === 0) {
+            list.innerHTML = `<div class="p-8 text-center text-gray-600 text-[10px] italic border border-dashed border-white/5 rounded-xl uppercase tracking-widest">Sin prospectos activos</div>`;
+            return;
+        }
         
         contacts.forEach(c => {
             const btn = document.createElement("button");
@@ -67,9 +81,6 @@ async function loadContacts() {
             list.appendChild(btn);
         });
         
-        if (contacts.length === 0) {
-            list.innerHTML = `<div class="p-8 text-center text-gray-600 text-xs italic border border-dashed border-white/5 rounded-xl">Sin conversaciones activas</div>`;
-        }
     } catch (e) {
         console.error("Error loading contacts", e);
     }
