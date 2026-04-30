@@ -22,6 +22,8 @@ function setupWebSocket() {
                 appendMessage(data.message);
                 scrollToBottom();
             }
+        } else if (data.type === "contact_update") {
+            loadContacts();
         }
     };
 
@@ -40,20 +42,34 @@ async function loadContacts() {
         list.innerHTML = "";
         
         contacts.forEach(c => {
-            const div = document.createElement("div");
-            div.className = `contact-item ${currentContactPhone === c.phone_number ? 'active' : ''}`;
-            div.onclick = () => selectContact(c.phone_number, c.name, c.is_ai_active);
+            const btn = document.createElement("button");
+            const isActive = currentContactPhone === c.phone_number;
+            
+            btn.className = `w-full text-left px-4 py-4 rounded-lg transition-all duration-200 group flex flex-col gap-1 ${
+                isActive 
+                ? 'bg-[#0056b3]/20 border border-[#0056b3]/30' 
+                : 'hover:bg-white/5 border border-transparent'
+            }`;
+            
+            btn.onclick = () => selectContact(c.phone_number, c.name, c.is_ai_active);
             
             const badge = c.is_ai_active ? 
-                `<span class="badge-ai">🤖 IA</span>` : 
-                `<span class="badge-human">👤 Humano</span>`;
+                `<span class="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-black uppercase">IA</span>` : 
+                `<span class="text-[9px] bg-gray-500/20 text-gray-400 px-1.5 py-0.5 rounded font-black uppercase">HUM</span>`;
 
-            div.innerHTML = `
-                <div class="contact-name">${c.name || 'Desconocido'} ${badge}</div>
-                <div class="contact-phone">+${c.phone_number}</div>
+            btn.innerHTML = `
+                <div class="flex justify-between items-center w-full">
+                    <span class="text-xs font-bold ${isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'} transition-colors">${c.name || 'Desconocido'}</span>
+                    ${badge}
+                </div>
+                <div class="text-[10px] ${isActive ? 'text-blue-300' : 'text-gray-500'} font-medium">+${c.phone_number}</div>
             `;
-            list.appendChild(div);
+            list.appendChild(btn);
         });
+        
+        if (contacts.length === 0) {
+            list.innerHTML = `<div class="p-8 text-center text-gray-600 text-xs italic border border-dashed border-white/5 rounded-xl">Sin conversaciones activas</div>`;
+        }
     } catch (e) {
         console.error("Error loading contacts", e);
     }
@@ -71,12 +87,15 @@ async function selectContact(phone, name, isAiActive) {
     // Set toggle state
     const toggle = document.getElementById("ai-toggle");
     const label = document.getElementById("ai-status-label");
-    toggle.checked = isAiActive;
-    label.innerText = isAiActive ? "🤖 IA Activa" : "👤 Modo Humano";
+    const modeText = document.getElementById("ai-mode-text");
     
-    // Highlight sidebar item
-    document.querySelectorAll('.contact-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    toggle.checked = isAiActive;
+    label.innerText = isAiActive ? "IA ACTIVA" : "MODO MANUAL";
+    label.className = `text-[9px] font-black uppercase tracking-widest ${isAiActive ? 'text-blue-500' : 'text-gray-500'}`;
+    modeText.innerText = isAiActive ? "Asistente Inteligente" : "Intervención Humana";
+    
+    // Refresh sidebar to update active state
+    loadContacts();
 
     // Load messages
     try {
@@ -95,22 +114,49 @@ async function selectContact(phone, name, isAiActive) {
 
 function appendMessage(msg) {
     const history = document.getElementById("chat-history");
-    const div = document.createElement("div");
+    const wrapper = document.createElement("div");
     
-    // msg.sender = 'user', 'ai', or 'human'
-    let className = 'msg-user';
-    if (msg.sender === 'ai') className = 'msg-ai';
-    if (msg.sender === 'human') className = 'msg-human';
+    // msg.sender_type = 'user', 'ai', or 'human'
+    const isUser = msg.sender_type === 'user';
+    const isAi = msg.sender_type === 'ai';
     
-    div.className = `message ${className}`;
+    wrapper.className = `flex w-full ${isUser ? 'justify-start' : 'justify-end'}`;
     
     const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    div.innerHTML = `
-        ${msg.content}
-        <span class="msg-time">${time}</span>
-    `;
     
-    history.appendChild(div);
+    let contentHtml = '';
+    if (isAi) {
+        contentHtml = `
+            <div class="max-w-[80%] bg-[#1a1a1a] border border-[#0056b3]/20 rounded-2xl p-4 relative shadow-lg">
+                <div class="absolute -top-3 left-4 bg-[#131313] px-2 border border-[#0056b3]/20 rounded-full">
+                    <span class="text-[9px] font-black text-[#acc7ff] flex items-center gap-1 uppercase tracking-tighter">
+                        <span class="material-symbols-outlined text-[12px]">smart_toy</span>
+                        AI Clinical Assistant
+                    </span>
+                </div>
+                <p class="text-sm text-gray-200 mt-1 leading-relaxed">${msg.content}</p>
+                <div class="text-[9px] text-gray-600 mt-2 text-left font-bold uppercase tracking-widest">${time}</div>
+            </div>
+        `;
+    } else if (isUser) {
+        contentHtml = `
+            <div class="max-w-[80%] bg-[#1a1a1a] rounded-2xl p-4 border border-white/5 shadow-md">
+                <p class="text-sm text-gray-300 leading-relaxed">${msg.content}</p>
+                <div class="text-[9px] text-gray-600 mt-2 text-left font-bold uppercase tracking-widest">${time}</div>
+            </div>
+        `;
+    } else {
+        // Human reply
+        contentHtml = `
+            <div class="max-w-[80%] bg-[#0056b3] rounded-2xl p-4 shadow-xl">
+                <p class="text-sm text-white leading-relaxed font-medium">${msg.content}</p>
+                <div class="text-[9px] text-blue-200 mt-2 text-right font-bold uppercase tracking-widest">${time}</div>
+            </div>
+        `;
+    }
+    
+    wrapper.innerHTML = contentHtml;
+    history.appendChild(wrapper);
 }
 
 function scrollToBottom() {
@@ -126,7 +172,11 @@ async function toggleAiMode() {
         const data = await res.json();
         
         const label = document.getElementById("ai-status-label");
-        label.innerText = data.is_ai_active ? "🤖 IA Activa" : "👤 Modo Humano";
+        const modeText = document.getElementById("ai-mode-text");
+        
+        label.innerText = data.is_ai_active ? "IA ACTIVA" : "MODO MANUAL";
+        label.className = `text-[9px] font-black uppercase tracking-widest ${data.is_ai_active ? 'text-blue-500' : 'text-gray-500'}`;
+        modeText.innerText = data.is_ai_active ? "Asistente Inteligente" : "Intervención Humana";
         
         loadContacts(); // Update badges in sidebar
     } catch (e) {
@@ -149,17 +199,14 @@ async function sendMessage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: text })
         });
-        
-        // Note: the websocket will broadcast our message back to us to append it
-        // However, if AI is active and we send a manual message, we should probably toggle AI off automatically?
-        // For now, the user uses the toggle switch explicitly.
     } catch (e) {
         console.error("Error sending message", e);
     }
 }
 
 function handleKeyPress(e) {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
         sendMessage();
     }
 }

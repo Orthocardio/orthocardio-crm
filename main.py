@@ -44,12 +44,18 @@ except Exception as e:
     logger.warning(f"No se pudieron crear tablas al inicio (se reintentará en la primera petición): {e}")
 
 
+
+
 META_VERIFY_TOKEN = os.getenv("META_VERIFY_TOKEN")
 META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 ADMIN_NUMBERS = [os.getenv("ADMIN_NUMBER_1"), os.getenv("ADMIN_NUMBER_2")]
 
 app = FastAPI(title="Ortho-Cardio CRM Búnker API")
+
+# Configurar templates
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # --- MIDDLEWARE: CORS SEGURO ---
 app.add_middleware(
@@ -328,5 +334,5 @@ async def send_whatsapp_message(phone_number_id: str, recipient_id: str, text: s
             logger.error(f"Meta API Error: {e}")
 
 @app.get("/", response_class=HTMLResponse)
-async def root_redirect():
-    return "<h1>Ortho-Cardio Búnker API</h1><p>Running in Zero-Defect Mode.</p>"
+async def root_dashboard(request: Request):
+    return templates.TemplateResponse("dashboard_premium.html", {"request": request})

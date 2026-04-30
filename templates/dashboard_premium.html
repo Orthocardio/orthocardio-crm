@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Ortho-Cardio | Premium Omnichannel CRM</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#353534",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-container": "#ffc1bf",
+                        "inverse-primary": "#115cb9",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad8",
+                        "on-tertiary-fixed-variant": "#92001c",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#b9c7e4",
+                        "on-background": "#e5e2e1",
+                        "on-surface-variant": "#c2c6d4",
+                        "surface-bright": "#393939",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#233148",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-container": "#bbd0ff",
+                        "primary-fixed-dim": "#acc7ff",
+                        "on-tertiary": "#680011",
+                        "tertiary-fixed-dim": "#ffb3b1",
+                        "on-tertiary-fixed": "#410007",
+                        "primary": "#acc7ff",
+                        "surface-container-highest": "#353534",
+                        "on-primary": "#002f67",
+                        "surface-container": "#201f1f",
+                        "on-primary-fixed-variant": "#004491",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-container": "#b30b27",
+                        "inverse-surface": "#e5e2e1",
+                        "outline": "#8c909e",
+                        "tertiary": "#ffb3b1",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#001a40",
+                        "on-secondary-fixed-variant": "#39475f",
+                        "secondary-container": "#3c4962",
+                        "surface-dim": "#131313",
+                        "primary-container": "#0056b3",
+                        "on-secondary-fixed": "#0d1c32",
+                        "background": "#131313",
+                        "on-surface": "#e5e2e1",
+                        "outline-variant": "#424752",
+                        "secondary-fixed-dim": "#b9c7e4",
+                        "surface-container-low": "#1c1b1b",
+                        "on-secondary-container": "#abb9d6",
+                        "surface-tint": "#acc7ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #131313; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #acc7ff; }
+
+        .chat-history { scroll-behavior: smooth; }
+        
+        /* Toggle Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #353534; transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #0056b3; }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-sm h-screen overflow-hidden flex flex-col">
+    <!-- TopNavBar -->
+    <nav class="bg-[#121212] docked full-width top-0 z-50 border-b border-[#1a1a1a] shadow-lg flex justify-between items-center px-8 h-16 w-full flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold tracking-tight text-white">Ortho-Cardio</span>
+            <span class="bg-[#0056b3]/20 text-[#acc7ff] text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-widest">Bunker AI</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer">notifications</span>
+            <span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer">settings</span>
+            <div class="flex items-center gap-2 border-l border-white/10 pl-6">
+                <div class="text-right hidden sm:block">
+                    <div class="text-xs font-bold text-white">Centro de Control</div>
+                    <div class="text-[10px] text-gray-500 uppercase tracking-tighter">Admin Principal</div>
+                </div>
+                <span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer" style="font-size: 32px;">account_circle</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="bg-[#1a1a1a] flex flex-col py-6 px-4 gap-2 w-[300px] flex-shrink-0 h-full border-r border-surface-container">
+            <div class="mb-6 px-2">
+                <h2 class="text-[11px] font-black uppercase text-gray-500 tracking-[0.1em] mb-1">GESTIÓN DE LEADS</h2>
+                <p class="text-xs text-gray-400">Precisión Clínica & CRM</p>
+            </div>
+            
+            <nav class="flex flex-col gap-1 overflow-y-auto pr-2" id="contact-list">
+                <!-- Contacts will be injected here via JS -->
+                <div class="p-4 text-center text-gray-500 text-xs italic">Cargando contactos...</div>
+            </nav>
+
+            <div class="mt-auto p-4 bg-[#121212] rounded-lg border border-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sistema Online</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col bg-background relative overflow-hidden h-full">
+            <!-- Empty State -->
+            <div id="empty-state" class="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                <div class="max-w-md text-center p-8 border border-white/5 rounded-2xl bg-[#1a1a1a]/50 shadow-2xl">
+                    <span class="material-symbols-outlined text-[#0056b3] text-6xl mb-4">clinical_notes</span>
+                    <h2 class="text-2xl font-bold text-white mb-2">Bienvenido al Búnker</h2>
+                    <p class="text-gray-400 text-sm">Seleccione una conversación en el panel izquierdo para comenzar la gestión omnicanal de Ortho-Cardio.</p>
+                </div>
+            </div>
+
+            <!-- Chat Container (Hidden initially) -->
+            <div id="chat-area" class="flex-1 flex flex-col h-full" style="display: none;">
+                <!-- Chat Header -->
+                <header class="flex items-center justify-between px-8 py-4 border-b border-surface-container bg-surface flex-shrink-0">
+                    <div class="flex flex-col">
+                        <h1 class="text-xl font-bold text-on-surface" id="active-contact-name">Selecciona un chat</h1>
+                        <span class="text-xs text-outline mt-0.5 tracking-wide" id="active-contact-phone"></span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-[#121212] px-4 py-2 rounded-full border border-white/5">
+                        <div class="flex flex-col items-end">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-gray-500" id="ai-status-label">IA ACTIVA</span>
+                            <span class="text-[10px] text-primary-container font-bold" id="ai-mode-text">Asistente Inteligente</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="ai-toggle" onchange="toggleAiMode()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </header>
+
+                <!-- Chat History -->
+                <div class="flex-1 overflow-y-auto px-8 py-8 flex flex-col gap-6 chat-history" id="chat-history">
+                    <!-- Messages will be injected here -->
+                </div>
+
+                <!-- Bottom Input -->
+                <div class="p-6 border-t border-surface-container bg-surface flex-shrink-0">
+                    <div class="flex items-end gap-4 bg-[#121212] p-2 rounded-xl border border-surface-container focus-within:border-[#0056b3] transition-all shadow-inner">
+                        <textarea id="message-input" class="flex-1 bg-transparent border-none text-on-surface text-sm resize-none focus:ring-0 placeholder:text-gray-600 p-3 min-h-[44px] max-h-[150px]" placeholder="Escribir mensaje de seguimiento médico..." rows="1" onkeypress="handleKeyPress(event)"></textarea>
+                        <button onclick="sendMessage()" class="bg-[#0056b3] text-white text-[10px] font-black tracking-widest px-6 py-3 rounded-lg hover:bg-[#004491] transition-all mb-1 h-[44px] flex items-center justify-center uppercase">
+                            Enviar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
