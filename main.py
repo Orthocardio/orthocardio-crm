@@ -82,8 +82,10 @@ def seed_demo_data():
         if db.query(Contact).count() == 0:
             logger.info("Base de datos vacía. Generando contactos demo...")
             demo_contacts = [
-                Contact(phone_number="521234567890", name="Dr. Alejandro Méndez", role="Cardiólogo", hospital="Hospital Ángeles", is_ai_active=True),
-                Contact(phone_number="529876543210", name="Dra. Sofía Reyes", role="Ortopedista", hospital="Centro Médico Siglo XXI", is_ai_active=False)
+                Contact(phone_number="521234567890", name="Dr. Alejandro Méndez", role="Cardiólogo", hospital="Hospital Ángeles", is_ai_active=True, status="HOT_LEAD"),
+                Contact(phone_number="529876543210", name="Dra. Sofía Reyes", role="Ortopedista", hospital="Centro Médico Siglo XXI", is_ai_active=False, status="COLD_LEAD"),
+                Contact(phone_number="522229998877", name="Dr. Julián Casablancas", role="Cirujano Columna", hospital="Hospital Puebla", is_ai_active=True, status="PENDING"),
+                Contact(phone_number="525554443322", name="Dra. Elena Poniatowska", role="Artroscopia", hospital="Médica Sur", is_ai_active=True, status="CONVERTED")
             ]
             db.add_all(demo_contacts)
             db.commit()

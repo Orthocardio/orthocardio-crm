@@ -1,6 +1,7 @@
 let currentContactPhone = null;
 let currentTab = 'crm';
 let currentChannel = 'whatsapp';
+let currentView = 'list'; // 'list' or 'pipeline'
 let ws = null;
 
 // Initialize
@@ -29,6 +30,35 @@ function switchTab(tabId) {
     });
 
     if (tabId === 'marketing') loadMarketingCampaigns();
+}
+
+function setListView(view) {
+    currentView = view;
+    const listBtn = document.getElementById('view-btn-list');
+    const pipeBtn = document.getElementById('view-btn-pipeline');
+    const chatHist = document.getElementById('chat-history');
+    const pipeView = document.getElementById('pipeline-view');
+    const inputArea = document.getElementById('input-area');
+    const chatHeader = document.getElementById('chat-header');
+
+    if (view === 'pipeline') {
+        listBtn.className = 'flex-1 py-1.5 text-[9px] font-black uppercase tracking-tighter bg-carbon-900 text-gray-500 rounded-lg border border-white/5 transition-all';
+        pipeBtn.className = 'flex-1 py-1.5 text-[9px] font-black uppercase tracking-tighter bg-clinical-500 text-white rounded-lg transition-all';
+        chatHist.classList.add('hidden');
+        pipeView.classList.remove('hidden');
+        inputArea.classList.add('hidden');
+        chatHeader.classList.add('hidden');
+        renderPipeline();
+    } else {
+        pipeBtn.className = 'flex-1 py-1.5 text-[9px] font-black uppercase tracking-tighter bg-carbon-900 text-gray-500 rounded-lg border border-white/5 transition-all';
+        listBtn.className = 'flex-1 py-1.5 text-[9px] font-black uppercase tracking-tighter bg-clinical-500 text-white rounded-lg transition-all';
+        pipeView.classList.add('hidden');
+        chatHist.classList.remove('hidden');
+        if (currentContactPhone) {
+            inputArea.classList.remove('hidden');
+            chatHeader.classList.remove('hidden');
+        }
+    }
 }
 
 function switchChannel(channel) {
@@ -135,9 +165,47 @@ async function loadContacts() {
             `;
             list.appendChild(item);
         });
+
+        if (currentView === 'pipeline') renderPipeline(contacts);
     } catch (e) {
         addLog("ERROR", `Error en red de contactos: ${e.message}`);
     }
+}
+
+function renderPipeline(contactsArray) {
+    if (!contactsArray) {
+        fetch('/api/contacts').then(r => r.json()).then(data => renderPipeline(data));
+        return;
+    }
+    
+    const stages = {
+        'PENDING': document.getElementById('pipe-pending'),
+        'COLD_LEAD': document.getElementById('pipe-followup'),
+        'HOT_LEAD': document.getElementById('pipe-quote'),
+        'CONVERTED': document.getElementById('pipe-won')
+    };
+    
+    // Clear columns
+    Object.values(stages).forEach(el => el.innerHTML = "");
+    
+    contactsArray.forEach(c => {
+        const stage = c.status || 'PENDING';
+        const container = stages[stage] || stages['PENDING'];
+        
+        const card = document.createElement("div");
+        card.className = "p-4 bg-carbon-800 border border-white/5 rounded-xl shadow-lg hover:border-clinical-500/50 cursor-pointer transition-all";
+        card.onclick = () => { setListView('list'); selectContact(c); };
+        
+        card.innerHTML = `
+            <div class="text-[10px] font-bold text-white mb-1">${c.name || 'Desconocido'}</div>
+            <div class="text-[9px] text-gray-500 font-mono mb-3">${c.role || 'Especialista'}</div>
+            <div class="flex justify-between items-center">
+                <span class="text-[8px] text-clinical-400 font-black uppercase tracking-tighter">${c.hospital || 'Nodo Activo'}</span>
+                <span class="material-symbols-outlined text-xs text-gray-600">drag_indicator</span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
 async function selectContact(contact) {
