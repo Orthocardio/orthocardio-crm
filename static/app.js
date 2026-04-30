@@ -31,6 +31,15 @@ function switchTab(tabId) {
     });
 
     if (tabId === 'marketing') loadMarketingPipeline();
+    
+    // Close mobile menu on tab switch
+    const sidebar = document.getElementById("main-sidebar");
+    if (sidebar) sidebar.classList.add("-translate-x-full");
+}
+
+function toggleMobileMenu() {
+    const sidebar = document.getElementById("main-sidebar");
+    sidebar.classList.toggle("-translate-x-full");
 }
 
 function switchChannel(channel) {
@@ -220,6 +229,12 @@ async function selectContact(contact) {
     
     loadMessages(contact.phone_number);
     addLog("USER", `Enlazando sesión segura con Dr. ${contact.name || contact.phone_number}`);
+    
+    // Close mobile menu after selection
+    const sidebar = document.getElementById("main-sidebar");
+    if (window.innerWidth < 768) {
+        sidebar.classList.add("-translate-x-full");
+    }
 }
 
 function toggleAiSummary() {
