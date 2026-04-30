@@ -74,7 +74,6 @@ function switchChannel(channel) {
             btn.classList.add('text-gray-500');
         }
     });
-    // Filter contacts based on channel (simulated for now)
     loadContacts();
 }
 
@@ -112,34 +111,28 @@ async function loadContacts() {
     try {
         const res = await fetch('/api/contacts');
         const data = await res.json();
-        
-        // Fix: Ensure data is an array
         const contacts = Array.isArray(data) ? data : [];
         
         const list = document.getElementById("contact-list");
         list.innerHTML = "";
 
         if (contacts.length === 0) {
-            list.innerHTML = '<div class="p-12 text-center text-gray-700 text-[10px] uppercase tracking-widest italic">Sin nodos detectados en este canal</div>';
+            list.innerHTML = '<div class="p-12 text-center text-gray-700 text-[10px] uppercase tracking-widest italic">Sin nodos detectados</div>';
             return;
         }
 
         contacts.forEach(c => {
             const isActive = currentContactPhone === c.phone_number;
             const item = document.createElement("div");
-            
-            // WhatsApp Web Style classes
             item.className = `flex items-center gap-4 p-4 cursor-pointer border-b border-white/5 transition-all duration-200 ${isActive ? 'bg-carbon-800' : 'hover:bg-carbon-800/40'}`;
-            
             item.onclick = () => selectContact(c);
             
-            // Icon based on channel
             let channelIcon = 'chat';
             let iconColor = 'text-whatsapp';
             if (c.phone_number.endsWith('1')) { channelIcon = 'photo_camera'; iconColor = 'text-instagram'; }
             if (c.phone_number.endsWith('2')) { channelIcon = 'send'; iconColor = 'text-messenger'; }
 
-            const statusColor = c.status === 'COLD_LEAD' ? 'bg-amber-500' : 'bg-green-500';
+            const statusColor = c.status === 'COLD_LEAD' ? 'bg-amber-500' : (c.status === 'HOT_LEAD' ? 'bg-red-500' : 'bg-green-500');
             const specialty = c.role || 'Especialista';
 
             item.innerHTML = `
@@ -185,12 +178,12 @@ function renderPipeline(contactsArray) {
         'CONVERTED': document.getElementById('pipe-won')
     };
     
-    // Clear columns
-    Object.values(stages).forEach(el => el.innerHTML = "");
+    Object.values(stages).forEach(el => { if(el) el.innerHTML = ""; });
     
     contactsArray.forEach(c => {
         const stage = c.status || 'PENDING';
         const container = stages[stage] || stages['PENDING'];
+        if (!container) return;
         
         const card = document.createElement("div");
         card.className = "p-4 bg-carbon-800 border border-white/5 rounded-xl shadow-lg hover:border-clinical-500/50 cursor-pointer transition-all";
@@ -208,18 +201,61 @@ function renderPipeline(contactsArray) {
     });
 }
 
+async function loadMarketingCampaigns() {
+    const grid = document.getElementById("marketing-grid");
+    if (!grid) return;
+    
+    grid.innerHTML = '<div class="p-20 text-center col-span-full opacity-30 italic">Sincronizando con el Motor Creativo...</div>';
+    
+    try {
+        const res = await fetch('/api/marketing/campaigns');
+        const campaigns = await res.json();
+        
+        grid.innerHTML = "";
+        campaigns.forEach(camp => {
+            const card = document.createElement("div");
+            card.className = "glass rounded-3xl overflow-hidden border border-white/5 group hover:border-clinical-500/50 transition-all duration-500";
+            card.innerHTML = `
+                <div class="relative h-48 overflow-hidden">
+                    <img src="${camp.image_url}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-carbon-900 to-transparent opacity-60"></div>
+                    <div class="absolute top-4 right-4 bg-carbon-900/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                        <span class="text-[8px] font-black text-clinical-400 uppercase tracking-widest">${camp.status}</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="text-[10px] text-clinical-500 font-black uppercase tracking-widest mb-2">${camp.target_region}</div>
+                    <h3 class="text-lg font-bold text-white mb-3 leading-tight">${camp.copy_headline}</h3>
+                    <p class="text-[11px] text-gray-500 line-clamp-2 mb-6">${camp.copy_body}</p>
+                    
+                    <div class="bg-carbon-900 rounded-xl p-4 mb-6 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2 text-[9px] text-gray-600 font-mono uppercase">
+                            <span class="material-symbols-outlined text-[12px]">auto_awesome</span> Nano Banana Prompt
+                        </div>
+                        <p class="text-[10px] text-gray-400 italic leading-relaxed">"${camp.nano_banana_prompt}"</p>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button class="flex-1 bg-clinical-500 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-clinical-400 transition-all">Aprobar</button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    } catch (e) {
+        grid.innerHTML = '<div class="p-20 text-center col-span-full text-red-500 text-xs uppercase font-black">Falla en Sincronización</div>';
+    }
+}
+
 async function selectContact(contact) {
     currentContactPhone = contact.phone_number;
-    
     document.getElementById("empty-state").classList.add("hidden");
     document.getElementById("chat-header").classList.remove("hidden");
     document.getElementById("input-area").classList.remove("hidden");
-    
     document.getElementById("active-name").innerText = contact.name || "Desconocido";
     document.getElementById("active-details").innerText = `${contact.role || 'ESPECIALISTA'} | ${contact.hospital || 'NODO ACTIVO'}`;
     document.getElementById("active-avatar").innerText = (contact.name || "?").charAt(0);
     
-    // Icon color update
     let channelIcon = 'chat';
     let iconColor = 'text-whatsapp';
     if (contact.phone_number.endsWith('1')) { channelIcon = 'photo_camera'; iconColor = 'text-instagram'; }
@@ -228,7 +264,6 @@ async function selectContact(contact) {
     iconEl.innerText = channelIcon;
     iconEl.className = `material-symbols-outlined text-[14px] ${iconColor}`;
 
-    // AI toggle
     const toggle = document.getElementById("ai-toggle");
     const label = document.getElementById("ai-mode-label");
     const dot = document.getElementById("ai-indicator-dot");
@@ -239,27 +274,20 @@ async function selectContact(contact) {
     
     loadContacts();
     loadMessages(contact.phone_number);
-    addLog("USER", `Abriendo túnel de comunicación con ${contact.name || contact.phone_number}`);
+    addLog("USER", `Abriendo túnel con ${contact.name || contact.phone_number}`);
 }
 
 async function loadMessages(phone) {
     try {
         const res = await fetch(`/api/contacts/${phone}/messages`);
         const data = await res.json();
-        
-        // Fix: Robust handling of non-array responses
-        if (!Array.isArray(data)) {
-            console.warn("Respuesta de mensajes no es un array:", data);
-            addLog("ERROR", `Error recuperando historial: El servidor no devolvió una lista.`);
-            return;
-        }
-
+        if (!Array.isArray(data)) return;
         const history = document.getElementById("chat-history");
         history.innerHTML = "";
         data.forEach(msg => appendMessage(msg));
         scrollToBottom();
     } catch (e) {
-        addLog("ERROR", `Error recuperando historial: ${e.message}`);
+        addLog("ERROR", `Error en historial: ${e.message}`);
     }
 }
 
@@ -269,23 +297,10 @@ function appendMessage(msg) {
     const isUser = msg.sender_type === 'user';
     const isAi = msg.sender_type === 'ai';
     const isHuman = msg.sender_type === 'human';
-    
     wrapper.className = `flex w-full ${isUser ? 'justify-start' : 'justify-end'} mb-2`;
     const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    
-    let bubbleClass = isUser ? 'bg-carbon-800 text-gray-200 message-bubble-user' : 
-                      isAi ? 'bg-carbon-800 border border-clinical-500/20 text-gray-200 message-bubble-ai' : 
-                      'bg-clinical-600 text-white message-bubble-human';
-    
-    let content = `
-        <div class="max-w-[75%] px-4 py-2 rounded-2xl shadow-md ${bubbleClass} relative">
-            ${isAi ? '<div class="text-[8px] font-black text-clinical-400 mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">smart_toy</span> AI Agent</div>' : ''}
-            <p class="text-sm leading-relaxed">${msg.content}</p>
-            <div class="text-[9px] ${isHuman ? 'text-blue-200' : 'text-gray-500'} mt-1 text-right font-mono">${time}</div>
-        </div>
-    `;
-    
-    wrapper.innerHTML = content;
+    let bubbleClass = isUser ? 'bg-carbon-800 text-gray-200' : isAi ? 'bg-carbon-800 border border-clinical-500/20 text-gray-200' : 'bg-clinical-600 text-white';
+    wrapper.innerHTML = `<div class="max-w-[75%] px-4 py-2 rounded-2xl shadow-md ${bubbleClass} relative">${isAi ? '<div class="text-[8px] font-black text-clinical-400 mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">smart_toy</span> AI Agent</div>' : ''}<p class="text-sm leading-relaxed">${msg.content}</p><div class="text-[9px] mt-1 text-right font-mono">${time}</div></div>`;
     history.appendChild(wrapper);
 }
 
@@ -294,10 +309,8 @@ async function sendMessage() {
     const input = document.getElementById("message-input");
     const text = input.value.trim();
     if (!text) return;
-    
     input.value = "";
-    addLog("SYSTEM", `Transmitiendo instrucción a +${currentContactPhone}...`);
-    
+    addLog("SYSTEM", `Transmitiendo a +${currentContactPhone}...`);
     try {
         await fetch(`/api/contacts/${currentContactPhone}/send`, {
             method: 'POST',
@@ -305,67 +318,37 @@ async function sendMessage() {
             body: JSON.stringify({ content: text })
         });
     } catch (e) {
-        addLog("ERROR", `Falla en transmisión: ${e.message}`);
+        addLog("ERROR", `Falla: ${e.message}`);
     }
 }
 
-function handleKeyPress(e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-}
+function handleKeyPress(e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 
 async function toggleAiMode() {
     if (!currentContactPhone) return;
     try {
         const res = await fetch(`/api/contacts/${currentContactPhone}/toggle_ai`, { method: 'POST' });
         const data = await res.json();
-        addLog("WATCHDOG", `Modo IA ${data.is_ai_active ? 'ACTIVADO' : 'DESACTIVADO'} para +${currentContactPhone}`);
+        addLog("WATCHDOG", `Modo IA ${data.is_ai_active ? 'ACTIVADO' : 'DESACTIVADO'}`);
         loadContacts();
-        
-        const label = document.getElementById("ai-mode-label");
-        const dot = document.getElementById("ai-indicator-dot");
-        label.innerText = data.is_ai_active ? "IA ACTIVA" : "MODO MANUAL";
-        label.className = `text-[9px] font-black uppercase tracking-widest ${data.is_ai_active ? 'text-clinical-400' : 'text-gray-500'}`;
-        dot.className = `w-2 h-2 rounded-full ${data.is_ai_active ? 'bg-clinical-500 animate-pulse' : 'bg-gray-700'}`;
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) {}
 }
 
 function addLog(type, message) {
     const container = document.getElementById("watchdog-logs");
     if (!container) return;
     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-    const colors = { SYSTEM: 'text-gray-500', WATCHDOG: 'text-clinical-400', USER: 'text-white', WARNING: 'text-amber-500', ERROR: 'text-red-500' };
-    
     const line = document.createElement("div");
-    line.className = `log-line mb-1 ${colors[type] || 'text-gray-400'}`;
+    line.className = `log-line mb-1 ${type === 'ERROR' ? 'text-red-500' : (type === 'WATCHDOG' ? 'text-clinical-400' : 'text-gray-400')}`;
     line.innerHTML = `<span class="opacity-30">[${time}]</span> <span class="font-bold">[${type}]</span> ${message}`;
     container.prepend(line);
-    if (container.children.length > 40) container.lastChild.remove();
 }
 
 function startWatchdogSimulation() {
-    const events = [
-        ["WATCHDOG", "Analizando sentimientos en hilo omnicanal..."],
-        ["SYSTEM", "Resiliency Engine: 100% Health"],
-        ["WATCHDOG", "Interceptando lead desde Instagram Direct."],
-        ["SYSTEM", "Sincronización de threads completada."],
-        ["WATCHDOG", "IA detectó urgencia clínica en mensaje 04."],
-    ];
     setInterval(() => {
-        if (Math.random() > 0.8) {
-            const ev = events[Math.floor(Math.random() * events.length)];
-            addLog(ev[0], ev[1]);
-        }
-    }, 5000);
+        if (Math.random() > 0.9) addLog("WATCHDOG", "Analizando sentimientos clínicos...");
+    }, 10000);
 }
 
-function scrollToBottom() {
-    const history = document.getElementById("chat-history");
-    history.scrollTop = history.scrollHeight;
-}
-
+function scrollToBottom() { const h = document.getElementById("chat-history"); h.scrollTop = h.scrollHeight; }
 function closeOverlay() { document.getElementById("overlay").classList.add("hidden"); }
