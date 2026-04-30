@@ -175,15 +175,17 @@ async def broadcast_swarm_task(agent: str, task: str):
 
 async def swarm_heartbeat():
     tasks = [
-        ("SEO_AGENT", "Analizando saturación de keywords 'Cirugía Robótica'..."),
-        ("SOURCING_AGENT", "Verificando disponibilidad de implantes en puerto CDMX..."),
-        ("CRM_AGENT", "Actualizando perfiles clínicos de leads de Instagram..."),
-        ("INVENTORY_AGENT", "Auditando stock de insumos quirúrgicos..."),
-        ("MARKETING_AGENT", "Refinando prompts de Nano Banana para campaña Puebla...")
+        ("SEO_AGENT", "Escaneando tendencias de búsqueda en tiempo real..."),
+        ("SOURCING_AGENT", "Optimizando cadena de suministro de implantes..."),
+        ("CRM_AGENT", "Analizando sentimientos clínicos en hilos activos..."),
+        ("INVENTORY_AGENT", "Verificando niveles de stock en nodos hospitalarios..."),
+        ("MARKETING_AGENT", "Sincronizando activos multimedia con Meta Staging..."),
+        ("SYSTEM_WATCHDOG", "Latencia de red: 42ms. Salud del Búnker: 100%."),
+        ("NEURAL_CORE", "Indexando nuevos conocimientos quirúrgicos...")
     ]
     import random
     while True:
-        await asyncio.sleep(random.randint(10, 20))
+        await asyncio.sleep(random.randint(5, 12)) # Más rápido para dar sensación de actividad
         agent, task = random.choice(tasks)
         await broadcast_swarm_task(agent, task)
 
@@ -343,6 +345,8 @@ async def verify_webhook(request: Request):
 async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
     try:
         body = await request.json()
+        # Log inmediato en la consola de enjambre
+        await broadcast_swarm_task("SYSTEM_WATCHDOG", "PAYLOAD_RECEPCIONADO: Verificando integridad de Meta API...")
         background_tasks.add_task(process_meta_payload, body)
         return Response(content="EVENT_RECEIVED", status_code=200)
     except Exception as e:

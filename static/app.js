@@ -315,10 +315,53 @@ function renderSwarmTask(agent, task) {
     if (!container) return;
     
     const line = document.createElement("div");
-    line.className = "text-[8px] py-1 border-l-2 border-clinical-500 pl-2 mb-1 bg-clinical-500/5 animate-pulse";
-    line.innerHTML = `<span class="text-clinical-400 font-black">${agent}:</span> ${task}`;
+    line.className = "text-[10px] py-1.5 border-l-2 border-clinical-500 pl-3 mb-1 bg-clinical-500/5 flex justify-between items-center group";
+    line.innerHTML = `
+        <span><span class="text-clinical-400 font-black uppercase">${agent}:</span> ${task}</span>
+        <span class="text-[8px] opacity-0 group-hover:opacity-40 transition-opacity font-mono">${new Date().toLocaleTimeString()}</span>
+    `;
     container.prepend(line);
-    if (container.children.length > 8) container.lastChild.remove();
+    if (container.children.length > 50) container.lastChild.remove();
+}
+
+function openModal(type) {
+    const overlay = document.getElementById("overlay");
+    const content = document.getElementById("overlay-content");
+    overlay.classList.remove("hidden");
+    
+    if (type === 'strategy') {
+        content.innerHTML = `
+            <h2 class="text-xl font-black text-white mb-6 uppercase">Generar Nueva Estrategia IA</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Objetivo Clínico</label>
+                    <input type="text" placeholder="Ej: Artroscopia de Hombro - Campaña Mayo" class="w-full bg-carbon-900 border border-white/5 rounded-xl p-4 text-white outline-none focus:border-clinical-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Región de Impacto</label>
+                    <select class="w-full bg-carbon-900 border border-white/5 rounded-xl p-4 text-white outline-none focus:border-clinical-500">
+                        <option>CDMX - Santa Fe</option>
+                        <option>Puebla - Angelópolis</option>
+                        <option>Guadalajara - Puerta de Hierro</option>
+                    </select>
+                </div>
+                <button class="w-full bg-clinical-500 text-white font-black py-4 rounded-xl mt-4 hover:bg-clinical-400 transition-all">INICIAR PROCESAMIENTO NEURAL</button>
+            </div>
+        `;
+    } else if (type === 'upload') {
+        content.innerHTML = `
+            <h2 class="text-xl font-black text-white mb-6 uppercase">Upload Professional Assets</h2>
+            <div class="border-2 border-dashed border-white/10 rounded-3xl p-12 text-center hover:border-clinical-500 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-4xl text-gray-700 mb-4">cloud_upload</span>
+                <p class="text-xs text-gray-500 uppercase font-black">Arrastra aquí tu render médico o video quirúrgico</p>
+                <p class="text-[9px] text-gray-700 mt-2 uppercase">Soporte hasta 4K / ProRES</p>
+            </div>
+            <div class="mt-8 flex gap-4">
+                <button onclick="closeOverlay()" class="flex-1 border border-white/5 text-gray-500 py-3 rounded-xl font-black uppercase">Cancelar</button>
+                <button class="flex-1 bg-clinical-500 text-white py-3 rounded-xl font-black uppercase">Vincular a Campaña</button>
+            </div>
+        `;
+    }
 }
 
 function startSwarmFeedSimulation() {
