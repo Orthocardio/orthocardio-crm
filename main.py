@@ -339,7 +339,7 @@ async def send_whatsapp_message(phone_number_id: str, recipient_id: str, text: s
 async def root_dashboard(request: Request):
     try:
         logger.info("Iniciando renderizado de dashboard_premium.html")
-        return templates.TemplateResponse("dashboard_premium.html", {"request": request})
+        return templates.TemplateResponse(request=request, name="dashboard_premium.html", context={})
     except Exception as e:
         import traceback
         err_msg = f"ERROR EN RAIZ: {str(e)}\n{traceback.format_exc()}"
