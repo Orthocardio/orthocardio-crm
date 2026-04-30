@@ -2,6 +2,8 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 google-genai
+google-generativeai
+tenacity
 python-multipart
 slowapi
 fpdf2
@@ -14,4 +16,3 @@ psycopg2-binary
 schedule
 python-dotenv
 pydantic-settings
-playwright
