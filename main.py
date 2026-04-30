@@ -49,24 +49,29 @@ def ensure_schema_sync():
     from sqlalchemy import text
     db = next(get_db())
     try:
-        # Forzar columnas faltantes en 'contacts'
+        # Forzar columnas faltantes en 'contacts' usando SQL nativo para mayor compatibilidad
         columns_to_check = [
-            ("status", "VARCHAR DEFAULT 'PENDING'"),
-            ("followup_draft", "VARCHAR"),
-            ("last_interaction", "TIMESTAMP")
+            ("status", "VARCHAR", "DEFAULT 'PENDING'"),
+            ("followup_draft", "VARCHAR", ""),
+            ("last_interaction", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP")
         ]
-        for col_name, col_type in columns_to_check:
-            try:
-                db.execute(text(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_type}"))
-                db.commit()
-                logger.info(f"Columna '{col_name}' añadida a la tabla 'contacts'.")
-            except Exception:
-                db.rollback() # Probablemente ya existe
         
-        # Sincronizar otras tablas si es necesario
+        # Obtener columnas existentes
+        existing_cols_result = db.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='contacts'"))
+        existing_cols = [row[0] for row in existing_cols_result]
+        
+        for col_name, col_type, extra in columns_to_check:
+            if col_name not in existing_cols:
+                logger.info(f"Detectada columna faltante: {col_name}. Migrando...")
+                db.execute(text(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_type} {extra}"))
+                db.commit()
+                logger.info(f"Columna '{col_name}' sincronizada.")
+        
+        # Sincronizar otras tablas
         Base.metadata.create_all(bind=engine)
     except Exception as e:
-        logger.error(f"Error sincronizando esquema: {e}")
+        db.rollback()
+        logger.error(f"FALLO CRÍTICO EN SINCRONIZACIÓN DE ESQUEMA: {e}")
     finally:
         db.close()
 
@@ -107,6 +112,7 @@ async def startup_event():
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+app.mount("/Logo", StaticFiles(directory=os.path.join(BASE_DIR, "Logo")), name="Logo")
 
 # --- MIDDLEWARE: CORS SEGURO ---
 app.add_middleware(
