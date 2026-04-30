@@ -32,17 +32,9 @@ load_dotenv(os.path.join(os.getcwd(), ".env"))
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("OrthoCardioCRM")
 
-# Inicializar componentes del enjambre
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-
-orchestrator = Orchestrator(api_key=GEMINI_API_KEY)
 pdf_engine = OrthoPDF()
 
-# Crear tablas en BD (tolerante a fallos de conexión para no bloquear el arranque)
 try:
-    Base.metadata.create_all(bind=engine)
     Base.metadata.create_all(bind=db_engine)
     logger.info("Tablas de BD sincronizadas correctamente.")
 except Exception as e:

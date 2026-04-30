@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
-import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+from model_router import router
 
 load_dotenv()
 
@@ -10,15 +10,15 @@ class BaseAgent:
         self.name = name
         self.role = role
         self.instruction = instruction
-        self.model = genai.GenerativeModel('gemini-2.0-flash') # Usamos el modelo más rápido y capaz
+        self.router = router # Usamos el Router de Resiliencia (Cascada)
 
     async def run(self, input_text: str, context: Dict[str, Any] = None) -> str:
-        prompt = f"ROLE: {self.role}\nCONTEXT: {context}\nUSER_INPUT: {input_text}"
-        response = self.model.generate_content(
-            contents=prompt,
-            system_instruction=self.instruction
+        # El router maneja la cascada de modelos automáticamente
+        response_text = await self.router.generate_content(
+            prompt=input_text,
+            system_instruction=f"ROLE: {self.role}\nCONTEXT: {context}\n{self.instruction}"
         )
-        return response.text
+        return response_text
 
 class MarketingAgent(BaseAgent):
     def __init__(self):
