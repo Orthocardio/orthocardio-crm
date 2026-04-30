@@ -44,7 +44,33 @@ try:
 except Exception as e:
     logger.warning(f"No se pudieron crear tablas al inicio: {e}")
 
-# --- SEMILLA DE DATOS (Solo si está vacío) ---
+# --- SINCRONIZACIÓN DE ESQUEMA (Migración Automática) ---
+def ensure_schema_sync():
+    from sqlalchemy import text
+    db = next(get_db())
+    try:
+        # Forzar columnas faltantes en 'contacts'
+        columns_to_check = [
+            ("status", "VARCHAR DEFAULT 'PENDING'"),
+            ("followup_draft", "VARCHAR"),
+            ("last_interaction", "TIMESTAMP")
+        ]
+        for col_name, col_type in columns_to_check:
+            try:
+                db.execute(text(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_type}"))
+                db.commit()
+                logger.info(f"Columna '{col_name}' añadida a la tabla 'contacts'.")
+            except Exception:
+                db.rollback() # Probablemente ya existe
+        
+        # Sincronizar otras tablas si es necesario
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        logger.error(f"Error sincronizando esquema: {e}")
+    finally:
+        db.close()
+
+# --- SEMILLA DE DATOS ---
 def seed_demo_data():
     db = next(get_db())
     try:
@@ -74,6 +100,7 @@ app = FastAPI(title="Ortho-Cardio CRM Búnker API")
 
 @app.on_event("startup")
 async def startup_event():
+    ensure_schema_sync()
     seed_demo_data()
 
 # Configurar templates
