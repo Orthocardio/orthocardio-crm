@@ -36,8 +36,13 @@ if GEMINI_API_KEY:
 orchestrator = Orchestrator(api_key=GEMINI_API_KEY)
 pdf_engine = OrthoPDF()
 
-# Crear tablas en BD
-Base.metadata.create_all(bind=engine)
+# Crear tablas en BD (tolerante a fallos de conexión para no bloquear el arranque)
+try:
+    Base.metadata.create_all(bind=engine)
+    logger.info("Tablas de BD sincronizadas correctamente.")
+except Exception as e:
+    logger.warning(f"No se pudieron crear tablas al inicio (se reintentará en la primera petición): {e}")
+
 
 META_VERIFY_TOKEN = os.getenv("META_VERIFY_TOKEN")
 META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN")
