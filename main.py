@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 from database import engine, Base, get_db
 from models import Contact, Message
 from orchestrator import Orchestrator
+from model_router import router
 from pdf_generator import OrthoPDF
 
 # Cargar variables de entorno
@@ -54,8 +55,9 @@ ADMIN_NUMBERS = [os.getenv("ADMIN_NUMBER_1"), os.getenv("ADMIN_NUMBER_2")]
 app = FastAPI(title="Ortho-Cardio CRM Búnker API")
 
 # Configurar templates
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 # --- MIDDLEWARE: CORS SEGURO ---
 app.add_middleware(
@@ -335,4 +337,9 @@ async def send_whatsapp_message(phone_number_id: str, recipient_id: str, text: s
 
 @app.get("/", response_class=HTMLResponse)
 async def root_dashboard(request: Request):
-    return templates.TemplateResponse("dashboard_premium.html", {"request": request})
+    try:
+        logger.info("Solicitud recibida en la raíz (/). Renderizando dashboard_premium.html")
+        return templates.TemplateResponse("dashboard_premium.html", {"request": request})
+    except Exception as e:
+        logger.error(f"FALLO RENDERIZANDO DASHBOARD: {e}")
+        raise e
