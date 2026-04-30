@@ -16,9 +16,12 @@ import httpx
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-from database import engine, Base, get_db
+from database import engine as db_engine, Base, get_db
 from models import Contact, Message
-from orchestrator import Orchestrator
+from services.core.engine import Orchestrator
+
+# Inicializar motor agéntico (El Cerebro)
+ai_engine = Orchestrator()
 from model_router import router
 from pdf_generator import OrthoPDF
 
@@ -40,6 +43,7 @@ pdf_engine = OrthoPDF()
 # Crear tablas en BD (tolerante a fallos de conexión para no bloquear el arranque)
 try:
     Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=db_engine)
     logger.info("Tablas de BD sincronizadas correctamente.")
 except Exception as e:
     logger.warning(f"No se pudieron crear tablas al inicio: {e}")
@@ -70,7 +74,7 @@ def ensure_schema_sync():
                 logger.info(f"Columna '{col_name}' sincronizada.")
         
         # Sincronizar otras tablas
-        Base.metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=db_engine)
     except Exception as e:
         db.rollback()
         logger.error(f"FALLO CRÍTICO EN SINCRONIZACIÓN DE ESQUEMA: {e}")
@@ -408,11 +412,20 @@ async def process_meta_payload(body: Dict[Any, Any]):
                             })
 
                             if contact.is_ai_active:
-                                await broadcast_swarm_task("NEURAL_CORE", f"Analizando intención de +{sender_id}...")
-                                response = await orchestrator.handle_message(
-                                    message_text, sender_id, contact.name or "Doctor", contact.hospital or "Hospital"
-                                )
-                                await broadcast_swarm_task("CRM_AGENT", f"Respuesta generada para {contact.name or sender_id}")
+                                await broadcast_swarm_task("NEURAL_CORE", f"Enrutando solicitud a enjambre especializado...")
+                                
+                                # Contexto para el agente
+                                context = {
+                                    "doctor_name": contact.name or "Desconocido",
+                                    "specialty": contact.role or "Especialista",
+                                    "hospital": contact.hospital or "N/A",
+                                    "platform": contact.source_platform
+                                }
+                                
+                                result = await ai_engine.route_and_execute(message_text, context)
+                                response = result["response"]
+                                
+                                await broadcast_swarm_task(result["agent"], f"Ejecución completada: {result['tasks'][0]}")
                                 
                                 if isinstance(response, str):
                                     await save_and_send_message(db, sender_id, response, phone_number_id)
