@@ -1,0 +1,55 @@
+```json
+{
+  "focus_keywords": [
+    "cirugía artroscópica",
+    "anclajes de titanio",
+    "reemplazo articular",
+    "traumatología deportiva",
+    "innovación quirúrgica",
+    "resultados quirúrgicos",
+    "cirugía de tobillo",
+    "cirugía de rodilla",
+    "cirugía de hombro"
+  ],
+  "priority_locations": [
+    "Puebla",
+    "Veracruz",
+    "Ciudad de México",
+    "Monterrey",
+    "Guadalajara"
+  ],
+  "strategic_direction": "Reinforce Ortho-Cardio's position as a provider of clinically-backed, technologically advanced solutions for orthopedic surgeons. Drive lead generation through targeted content focused on improving surgical outcomes and showcasing the benefits of our products, *strictly adhering to the compliance policy*.  Prioritize content that demonstrates value beyond product features, focusing on clinical evidence and surgical optimization.  Improve conversion rates by refining targeting and messaging based on successful Meta ad creatives.",
+  "content_pillars": [
+    {
+      "pillar_name": "Clinical Evidence & Case Studies",
+      "content_types": [
+        "Short-form videos showcasing successful surgical outcomes (Puebla/Veracruz focus)",
+        "Blog posts detailing clinical studies supporting product efficacy",
+        "Infographics summarizing key clinical data",
+        "Webinars featuring surgeons discussing their experiences with Ortho-Cardio products (emphasizing results, *not incentives*)"
+      ],
+      "keywords": ["cirugía artroscópica", "resultados quirúrgicos", "evidencia clínica", "estudios clínicos"]
+    },
+    {
+      "pillar_name": "Technological Innovation",
+      "content_types": [
+        "Detailed product spotlights (Macro-Titanium-Ankle, building on ad performance)",
+        "Articles explaining the science behind our technologies",
+        "Comparisons of Ortho-Cardio technology vs. competitors (focus on clinical advantages)",
+        "Animated explainer videos demonstrating product features and benefits"
+      ],
+      "keywords": ["anclajes de titanio", "innovación quirúrgica", "tecnología médica", "reemplazo articular"]
+    },
+    {
+      "pillar_name": "Surgical Optimization & Best Practices",
+      "content_types": [
+        "Tips and techniques for improving surgical efficiency",
+        "Checklists for pre-operative planning and post-operative care",
+        "Expert interviews with surgeons sharing their best practices",
+        "Content addressing common surgical challenges and solutions"
+      ],
+      "keywords": ["cirugía de tobillo", "cirugía de rodilla", "cirugía de hombro", "traumatología deportiva", "optimización quirúrgica"]
+    }
+  ]
+}
+```

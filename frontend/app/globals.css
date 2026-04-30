@@ -71,13 +71,34 @@
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-on-background);
+  background-color: #0c0c0f;
+  color: #e1e1e6;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar for Búnker Aesthetics */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e1e24;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2e2e38;
 }
 
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
+
 .material-symbols-outlined.fill {
   font-variation-settings: 'FILL' 1;
 }
+

@@ -1,93 +1,56 @@
 import os
 import json
 import logging
-from typing import List
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+from typing import List, Dict, Any
+from model_router import router
 
-# Configuración estricta de logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
 logger = logging.getLogger("ContentPlanner")
 
-# Carga de entorno
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+class ContentPlanner:
+    """
+    Director Creativo IA de Ortho-Cardio.
+    Estructura campañas de marketing clínico con prompts de renderizado de ultra-alta gama.
+    """
+    def __init__(self):
+        self.visual_standard_instruction = """
+        Los prompts generados para imágenes deben seguir estrictamente el estándar visual de Arthrex fusionado con el minimalismo de una Apple Store. 
+        Iluminación de estudio dramática, contrastes premium, fondos oscuros (Carbon) o neutros absolutos. 
+        Enfoque macro en texturas de grado médico (titanio, acero, fibra). 
+        La imagen debe transmitir seguridad clínica extrema, tecnología de punta y lujo B2B. 
+        Queda absolutamente prohibido sugerir gráficos caricaturescos, colores pastel o renders de baja calidad.
+        NUNCA uses emojis en ninguna parte de la respuesta.
+        """
 
-if not GEMINI_API_KEY:
-    logger.critical("Variable de entorno GEMINI_API_KEY no definida.")
-    exit(1)
-
-# Inicialización del cliente moderno de GenAI
-client = genai.Client(api_key=GEMINI_API_KEY)
-
-# Esquemas de datos para garantizar Structured Output (JSON Válido estricto)
-class PostPlan(BaseModel):
-    dia_publicacion: str
-    pilar_estrategico: str
-    copy_sugerido: str
-    idea_visual_para_video: str
-    hashtags_seo_local: str
-
-class WeeklyMatrix(BaseModel):
-    publicaciones: list[PostPlan]
-
-SYSTEM_PROMPT = """Actúas como Director de Marketing Clínico de Comercializadora Ortho-Cardio.
-REGLAS INQUEBRANTABLES:
-- El lenguaje de todos los campos, especialmente 'copy_sugerido', debe ser puramente clínico, corporativo y de lujo tecnológico.
-- Queda absolutamente prohibido el uso de emojis en cualquier campo generado.
-- Queda estrictamente prohibida la utilización de frases como 'héroes de bata blanca' o cualquier otra expresión emotiva, coloquial o informal.
-- Los copies y hashtags deben estar optimizados para el posicionamiento SEO local, haciendo mención sutil pero estratégica a las zonas de operación: San Pedro Cholula, Puebla, Veracruz y Oaxaca.
-- Tu objetivo es diseñar una matriz de contenido estratégico enfocada exclusivamente al B2B médico, tecnología quirúrgica e insumos especializados."""
-
-def generate_weekly_matrix():
-    """Invoca el modelo gemini-1.5-pro para la planeación analítica y exportación JSON."""
-    prompt = """Genera un calendario semanal de 4 publicaciones. 
-Debes rotar obligatoriamente entre los siguientes 4 pilares estratégicos:
-1. Innovación en tecnología quirúrgica (soluciones de osteosíntesis, artroscopia).
-2. Educación médica continua y capacitación técnica en quirófano.
-3. Eficiencia logística, trazabilidad y control de inventario hospitalario.
-4. Disponibilidad de equipo crítico y casos de éxito logístico.
-
-Retorna la matriz estructurada respetando milimétricamente las restricciones de formato, tono y SEO local geolocalizado."""
-
-    logger.info("Iniciando procesamiento analítico con gemini-1.5-pro...")
-    
-    try:
-        # Se aprovecha la capacidad de response_schema para evitar expresiones regulares o fallos de parsing
-        response = client.models.generate_content(
-            model='gemini-1.5-pro',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                response_mime_type="application/json",
-                response_schema=WeeklyMatrix,
-                temperature=0.3  # Reducción de varianza para forzar rigor corporativo
-            )
-        )
+    async def generate_campaign_structure(self, product_name: str, clinical_advantage: str) -> Dict[Any, Any]:
+        """
+        Genera la estructura de una campaña incluyendo el prompt para Nano Banana.
+        """
+        system_prompt = f"""
+        Eres el Director Creativo de Ortho-Cardio. Tu tarea es estructurar un post de marketing clínico.
+        Debes devolver un JSON con la siguiente estructura:
+        {{
+            "campaign_title": "...",
+            "copy_headline": "Texto principal (máximo 10 palabras)",
+            "copy_body": "Cuerpo tcnico (máximo 40 palabras, tono corporativo)",
+            "nano_banana_prompt": "Prompt detallado de renderizado basado en las reglas visuales",
+            "target_specialty": "Especialidad médica destino"
+        }}
+        {self.visual_standard_instruction}
+        """
         
-        raw_json = response.text
+        user_prompt = f"Producto: {product_name}. Ventaja Clínica: {clinical_advantage}."
         
-        # Validación final de estructura JSON
         try:
-            data = json.loads(raw_json)
-        except json.JSONDecodeError as e:
-            logger.error(f"Falla crítica: El motor no retornó un JSON válido. Detalle: {str(e)}")
-            return
-            
-        output_file = "matriz_semanal.json"
-        
-        with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-            
-        logger.info(f"Ciclo completado con éxito. Matriz estructural guardada en disco: {output_file}")
-        
-    except Exception as e:
-        logger.error(f"Falla de ejecución en la orquestación del modelo: {str(e)}")
-
-if __name__ == "__main__":
-    generate_weekly_matrix()
+            response_text = await router.generate_content(
+                prompt=user_prompt,
+                system_instruction=system_prompt,
+                json_mode=True
+            )
+            return json.loads(response_text)
+        except Exception as e:
+            logger.error(f"Error en planeación de contenido: {e}")
+            return {
+                "campaign_title": f"Lanzamiento {product_name}",
+                "nano_banana_prompt": f"Macro medical photography of {product_name}, surgical titanium texture, dramatic studio lighting, carbon background, 8k resolution, photorealistic.",
+                "error": "Respuesta simplificada por falla en cascada."
+            }

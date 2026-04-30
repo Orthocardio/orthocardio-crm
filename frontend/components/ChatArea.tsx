@@ -2,44 +2,76 @@
 
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { api, Message, Contact } from "@/utils/api";
 import HumanHandoffToggle from "./HumanHandoffToggle";
 
-interface Message {
-  id: number;
-  contact_id: string;
-  sender_type: "client" | "ai" | "human";
-  content: string;
-  timestamp: string;
+interface ChatAreaProps {
+  activeContact: Contact | null;
 }
 
-export default function ChatArea() {
+export default function ChatArea({ activeContact }: ChatAreaProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [localAiActive, setLocalAiActive] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
   useEffect(() => {
-    // 1. Cargar mensajes iniciales (opcional, pero recomendado)
-    const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .order("timestamp", { ascending: true });
+    if (activeContact) {
+      setLocalAiActive(activeContact.is_ai_active);
+      if (activeContact.followup_draft) {
+        setInputText(activeContact.followup_draft);
+      } else {
+        setInputText("");
+      }
+    }
+  }, [activeContact]);
 
-      if (data) setMessages(data);
+
+  const handleToggleAI = async () => {
+    if (!activeContact) return;
+    try {
+      const newState = await api.toggleAI(activeContact.phone_number);
+      setLocalAiActive(newState);
+    } catch (error) {
+      console.error("Error toggling AI:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!activeContact) {
+      setMessages([]);
+      return;
+    }
+
+    const fetchMessages = async () => {
+      try {
+        const data = await api.getMessages(activeContact.phone_number);
+        setMessages(data);
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
     };
 
     fetchMessages();
 
-    // 2. Suscripción Realtime a la tabla 'messages'
     const channel = supabase
-      .channel("realtime_messages")
+      .channel(`chat_${activeContact.phone_number}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
+        { 
+          event: "INSERT", 
+          schema: "public", 
+          table: "messages",
+          filter: `contact_phone=eq.${activeContact.phone_number}`
+        },
         (payload) => {
           const newMessage = payload.new as Message;
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => {
+            if (prev.some(m => m.id === newMessage.id)) return prev;
+            return [...prev, newMessage];
+          });
         }
       )
       .subscribe();
@@ -47,7 +79,7 @@ export default function ChatArea() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [activeContact]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,87 +88,105 @@ export default function ChatArea() {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !activeContact || isSending) return;
 
-    // En un entorno real, aquí llamaríamos a un endpoint de FastAPI o 
-    // insertaríamos directamente en Supabase si los permisos lo permiten.
-    // Para esta demo, asumimos que el backend procesa el envío.
-    console.log("Enviando mensaje:", inputText);
-    setInputText("");
+    setIsSending(true);
+    try {
+      await api.sendMessage(activeContact.phone_number, inputText);
+      setInputText("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsSending(false);
+    }
   };
 
+  if (!activeContact) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#0c0c0f] text-[#4a4a52]">
+        <span className="material-symbols-outlined text-4xl mb-4">clinical_notes</span>
+        <p className="text-sm font-medium tracking-wide">Seleccione un prospecto clínico para iniciar la gestión</p>
+      </div>
+    );
+  }
+
   return (
-    <main className="flex-1 flex flex-col bg-background relative overflow-hidden h-full">
-      {/* Chat Header */}
-      <header className="flex items-center justify-between px-8 py-6 border-b border-surface-container bg-surface flex-shrink-0">
-        <div className="flex flex-col">
-          <h1 className="font-h2 text-on-surface text-xl font-semibold">
-            Prospecto: Dr. Alejandro Méndez
-          </h1>
-          <span className="font-metadata text-outline mt-1 text-sm">
-            Hospital ABC Santa Fe
-          </span>
+    <main className="flex-1 flex flex-col bg-[#0c0c0f] relative overflow-hidden h-full">
+      {/* Header */}
+      <header className="px-8 py-6 border-b border-[#1e1e24] bg-[#0f0f12] flex justify-between items-center">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-[#e1e1e6] text-lg font-bold tracking-tight">
+              {activeContact.name}
+            </h1>
+            <span className="text-[10px] bg-[#16161d] text-[#71717a] border border-[#1e1e24] px-2 py-0.5 rounded uppercase font-bold">
+              {activeContact.phone_number}
+            </span>
+          </div>
+          <p className="text-[#71717a] text-xs font-medium">{activeContact.hospital || "S/N Hospital"}</p>
         </div>
-        <HumanHandoffToggle />
+
+        <HumanHandoffToggle isAiActive={localAiActive} onToggle={handleToggleAI} />
       </header>
 
-      {/* Chat History Area */}
+      {/* History */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-8 py-10 flex flex-col gap-6"
+        className="flex-1 overflow-y-auto px-8 py-10 flex flex-col gap-8 custom-scrollbar"
       >
         {messages.map((msg) => {
-          if (msg.sender_type === "client") {
-            return (
-              <div key={msg.id} className="flex w-full justify-start">
-                <div className="max-w-[70%] bg-[#1a1a1a] rounded-lg p-4">
-                  <p className="font-body-lg text-on-surface">{msg.content}</p>
-                  <div className="font-metadata text-outline mt-2 text-left text-xs">
+          const isUser = msg.sender_type === "user";
+          const isAI = msg.sender_type === "ai";
+          
+          return (
+            <div key={msg.id} className={`flex w-full ${isUser ? "justify-start" : "justify-end"}`}>
+              <div className={`max-w-[65%] group`}>
+                <div className={`relative p-4 rounded-xl border ${
+                  isUser 
+                    ? "bg-[#16161d] border-[#1e1e24] text-[#e1e1e6]" 
+                    : isAI 
+                      ? "bg-[#0c1a2d] border-[#0056b3]/30 text-[#e1e1e6]"
+                      : "bg-[#007aff] border-transparent text-white"
+                }`}>
+                  {isAI && (
+                    <div className="absolute -top-2.5 left-4 flex items-center gap-1.5 px-2 py-0.5 bg-[#0c0c0f] border border-[#0056b3]/30 rounded">
+                      <span className="material-symbols-outlined text-[12px] text-[#007aff]">smart_toy</span>
+                      <span className="text-[9px] font-black text-[#007aff] uppercase tracking-tighter">Clinical Intelligence</span>
+                    </div>
+                  )}
+                  <p className="text-sm leading-relaxed font-medium">{msg.content}</p>
+                </div>
+                <div className={`mt-2 flex items-center gap-2 ${isUser ? "justify-start" : "justify-end"}`}>
+                  <span className="text-[10px] font-bold text-[#4a4a52] uppercase">
+                    {isAI ? "Automated" : isUser ? "Client" : "Executive"}
+                  </span>
+                  <span className="text-[10px] text-[#2a2a32]">|</span>
+                  <span className="text-[10px] text-[#4a4a52]">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
+                  </span>
                 </div>
               </div>
-            );
-          } else if (msg.sender_type === "ai") {
-            return (
-              <div key={msg.id} className="flex w-full justify-start">
-                <div className="max-w-[70%] bg-[#1a1a1a] border border-[#0056b3]/20 rounded-lg p-4 relative">
-                  <div className="absolute -top-3 left-4 bg-background px-2">
-                    <span className="font-label-caps text-primary-container flex items-center gap-1 text-[10px] font-bold">
-                      <span className="material-symbols-outlined text-[14px]">smart_toy</span>
-                      AI ASSISTANT
-                    </span>
-                  </div>
-                  <p className="font-body-lg text-on-surface mt-2">{msg.content}</p>
-                  <div className="font-metadata text-outline mt-2 text-left text-xs">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-              </div>
-            );
-          } else {
-            return (
-              <div key={msg.id} className="flex w-full justify-end">
-                <div className="max-w-[70%] bg-[#0a192f] rounded-lg p-4">
-                  <p className="font-body-lg text-on-surface">{msg.content}</p>
-                  <div className="font-metadata text-outline mt-2 text-right text-xs">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-              </div>
-            );
-          }
+            </div>
+          );
         })}
       </div>
 
-      {/* Bottom Input */}
-      <div className="p-8 border-t border-surface-container bg-surface flex-shrink-0">
-        <div className="flex items-end gap-4 bg-[#121212] p-2 rounded-lg border border-surface-container focus-within:border-primary-container transition-colors">
+      {/* Input */}
+      <div className="p-8 bg-[#0f0f12] border-t border-[#1e1e24]">
+        {activeContact.followup_draft && inputText === activeContact.followup_draft && (
+          <div className="flex items-center gap-1.5 mb-3 px-1">
+            <span className="material-symbols-outlined text-[12px] text-[#007aff]">lightbulb</span>
+            <span className="text-[10px] font-black text-[#007aff] uppercase tracking-widest">Sugerencia de Seguimiento IA</span>
+          </div>
+        )}
+        <div className="flex items-end gap-4 bg-[#0c0c0f] p-3 rounded-xl border border-[#1e1e24] focus-within:border-[#007aff]/50 transition-all duration-300">
+
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="flex-1 bg-transparent border-none text-on-surface font-body-lg resize-none focus:ring-0 placeholder:text-outline p-2 min-h-[44px] max-h-[120px]"
-            placeholder="Escribir mensaje..."
+            disabled={isSending}
+            className="flex-1 bg-transparent border-none text-[#e1e1e6] text-sm font-medium resize-none focus:ring-0 placeholder:text-[#4a4a52] p-2 min-h-[44px] max-h-[120px] custom-scrollbar"
+            placeholder="Redactar respuesta técnica..."
             rows={1}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -147,9 +197,16 @@ export default function ChatArea() {
           ></textarea>
           <button
             onClick={handleSendMessage}
-            className="bg-primary-container text-white font-label-caps px-6 py-3 rounded hover:bg-on-primary-fixed-variant transition-colors mb-1 h-[44px] flex items-center justify-center font-bold text-xs uppercase"
+            disabled={isSending || !inputText.trim()}
+            className={`px-6 py-3 rounded-lg flex items-center justify-center transition-all duration-300 ${
+              !inputText.trim() || isSending
+                ? "bg-[#16161d] text-[#4a4a52] cursor-not-allowed"
+                : "bg-[#007aff] text-white hover:bg-[#0056b3] shadow-lg shadow-[#007aff]/10"
+            }`}
           >
-            ENVIAR
+            <span className="text-[11px] font-black uppercase tracking-widest">
+              {isSending ? "Enviando..." : "Transmitir"}
+            </span>
           </button>
         </div>
       </div>

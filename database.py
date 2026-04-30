@@ -3,54 +3,33 @@ import urllib.parse
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_URL") or "sqlite:///./orthocardio_crm.db"
 
+# Normalización de URL para SQLAlchemy y Supabase Transaction Pooler (Port 6543)
 if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
-elif DATABASE_URL.startswith("postgresql://"):
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# [FIX ULTIMATE] Codificación robusta
-if "@" in DATABASE_URL and "://" in DATABASE_URL:
-    try:
-        scheme, rest = DATABASE_URL.split("://", 1)
-        auth, host_port_db = rest.rsplit("@", 1) # Usar rsplit para manejar @ en password
-        user, password = auth.split(":", 1)
-        encoded_password = urllib.parse.quote_plus(password)
-        DATABASE_URL = f"{scheme}://{user}:{encoded_password}@{host_port_db}"
-    except Exception as e:
-        print(f"Error parseando URL: {e}")
-
-# [FIX NETWORK] Parámetros obligatorios para Supabase en Render
-if "supabase.co" in DATABASE_URL:
-    # Si el host original falla por IPv6, usamos el pooler que es más estable en Render
-    DATABASE_URL = DATABASE_URL.replace("db.iixogvvlzgfsgvzmacqf.supabase.co", "aws-0-us-east-1.pooler.supabase.com")
-    
+# [FIX] Supabase Pooler requiere el tenant_id en el usuario si no se detecta
+# Formato: postgresql://postgres.[TENANT_ID]:[PASSWORD]@...
+if "pooler.supabase.com" in DATABASE_URL or "supabase.co" in DATABASE_URL:
     if "sslmode" not in DATABASE_URL:
         separator = "&" if "?" in DATABASE_URL else "?"
         DATABASE_URL += f"{separator}sslmode=require"
     
-    # El pooler de Supabase SIEMPRE usa el puerto 6543
-    if ":5432" in DATABASE_URL:
-        DATABASE_URL = DATABASE_URL.replace(":5432", ":6543")
-
-connect_args = {}
-if DATABASE_URL.startswith("sqlite"):
-    connect_args["check_same_thread"] = False
-else:
-    # Para PostgreSQL en Render/Supabase
-    connect_args["sslmode"] = "require"
+# Configuración dinámica de argumentos de conexión
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 try:
-    engine = create_engine(DATABASE_URL, connect_args=connect_args)
+    engine = create_engine(DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
+
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base = declarative_base()
 except Exception as e:
-    print(f"ERROR CRÍTICO DE BASE DE DATOS: {e}")
-    # Fallback a SQLite temporal para evitar crash total si la red falla
-    engine = create_engine("sqlite:///./fallback.db", connect_args={"check_same_thread": False})
+    print(f"FALLBACK: Error crítico de conexión ({e}). Reintentando con SQLite local.")
+    engine = create_engine("sqlite:///./orthocardio_crm.db", connect_args={"check_same_thread": False})
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()
@@ -58,3 +37,4 @@ def get_db():
         yield db
     finally:
         db.close()
+

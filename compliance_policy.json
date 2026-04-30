@@ -1,0 +1,26 @@
+{
+  "company_name": "Comercializadora Ortho-Cardio",
+  "brand_representation": "Arthrex USA",
+  "compliance_rules": [
+    {
+      "id": "regla_1",
+      "description": "Prohibición absoluta de incentivos financieros, comisiones o beneficios indebidos para asegurar ventas.",
+      "directive": "Queda estrictamente prohibido ofrecer incentivos financieros, comisiones, o 'sobornos' de cualquier tipo."
+    },
+    {
+      "id": "regla_2",
+      "description": "Restricción de privilegios educativos (AGU/Cursos Cadavéricos).",
+      "directive": "El acceso a AGU (Arthrex Global University), cursos cadavéricos y viajes a Naples, FL, NO es una herramienta de prospección. Es un privilegio estrictamente reservado para cirujanos que han demostrado consumo continuo y están perfilados en la plataforma oficial."
+    },
+    {
+      "id": "regla_3",
+      "description": "Foco en Evidencia Clínica y Tecnología.",
+      "directive": "Toda comunicación debe centrarse exclusivamente en la evidencia clínica, innovación tecnológica, y optimización de resultados en quirófano."
+    }
+  ],
+  "communication_standard": {
+    "tone": "Estrictamente corporativo y clínico",
+    "restrictions": "Cero emojis. Prohibido el lenguaje informal.",
+    "visual_identity": "Minimalismo Apple Store / Arthrex Premium."
+  }
+}

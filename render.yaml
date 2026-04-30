@@ -1,19 +1,26 @@
 services:
   - type: web
-    name: orthocardio-crm
+    name: orthocardio-crm-bunker
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.12.2
       - key: DATABASE_URL
         sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: META_ACCESS_TOKEN
         sync: false
-      - key: PHONE_NUMBER_ID
-        sync: false
       - key: META_VERIFY_TOKEN
         sync: false
+      - key: PHONE_NUMBER_ID
+        sync: false
+      - key: ADMIN_NUMBER_1
+        value: 522211853060
+      - key: ADMIN_NUMBER_2
+        value: 522221143252
+    autoDeploy: true
+    healthCheckPath: /
