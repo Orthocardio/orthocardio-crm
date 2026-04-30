@@ -338,8 +338,10 @@ async def send_whatsapp_message(phone_number_id: str, recipient_id: str, text: s
 @app.get("/", response_class=HTMLResponse)
 async def root_dashboard(request: Request):
     try:
-        logger.info("Solicitud recibida en la raíz (/). Renderizando dashboard_premium.html")
+        logger.info("Iniciando renderizado de dashboard_premium.html")
         return templates.TemplateResponse("dashboard_premium.html", {"request": request})
     except Exception as e:
-        logger.error(f"FALLO RENDERIZANDO DASHBOARD: {e}")
-        raise e
+        import traceback
+        err_msg = f"ERROR EN RAIZ: {str(e)}\n{traceback.format_exc()}"
+        logger.error(err_msg)
+        return HTMLResponse(content=f"<h1>Error de Servidor</h1><pre>{err_msg}</pre>", status_code=500)
