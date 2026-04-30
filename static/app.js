@@ -271,11 +271,38 @@ async function loadMarketingPipeline() {
     
     Object.values(stages).forEach(el => el.innerHTML = '<div class="text-[9px] text-gray-700 animate-pulse uppercase">Syncing...</div>');
     
-    // Mocking real pipeline data
+    // Mocking real pipeline data con regiones correctas
     const mockCampaigns = [
-        { id: 1, title: "Artroscopia Avanzada", stage: "STRATEGY", region: "CDMX", headline: "Precisión Quirúrgica", reason: "Tendencia creciente en búsquedas de 'recuperación rápida' en Santa Fe." },
-        { id: 2, title: "Columna 2026", stage: "PRODUCTION", region: "Puebla", headline: "Libertad de Movimiento", reason: "Mercado saturado de prótesis rígidas. Enfocando en flexibilidad." },
-        { id: 3, title: "Implantes Dentales", stage: "SCHEDULED", region: "Lomas", headline: "Tu Mejor Sonrisa", reason: "Target de alto poder adquisitivo detectado en geolocalización." }
+        { 
+            id: 1, 
+            title: "Artroscopia Avanzada", 
+            stage: "STRATEGY", 
+            region: "Puebla", 
+            headline: "Precisión Quirúrgica", 
+            reason: "Tendencia creciente en búsquedas de 'recuperación rápida' en Angelópolis.",
+            prompt: "Generar render 3D de articulación de hombro con iluminación cinematográfica y logo Ortho-Cardio en la esquina superior derecha.",
+            scope: "15,000 médicos especialistas en traumatología."
+        },
+        { 
+            id: 2, 
+            title: "Columna 2026", 
+            stage: "PRODUCTION", 
+            region: "Oaxaca", 
+            headline: "Libertad de Movimiento", 
+            reason: "Mercado saturado de prótesis rígidas. Enfocando en flexibilidad y tecnología híbrida.",
+            prompt: "Video 4K de 15 segundos mostrando la flexibilidad de la prótesis de titanio grado médico.",
+            scope: "8,000 leads en la región sur del país."
+        },
+        { 
+            id: 3, 
+            title: "Implantes Dentales", 
+            stage: "SCHEDULED", 
+            region: "Veracruz", 
+            headline: "Tu Mejor Sonrisa", 
+            reason: "Target de alto poder adquisitivo detectado en zonas portuarias.",
+            prompt: "Carrusel de Instagram con casos de éxito y testimonios de cirujanos locales.",
+            scope: "25,000 impresiones garantizadas via Meta Ads."
+        }
     ];
     
     setTimeout(() => {
@@ -285,16 +312,28 @@ async function loadMarketingPipeline() {
             const card = document.createElement("div");
             card.className = "p-4 bg-carbon-800 border border-white/5 rounded-xl group hover:border-clinical-500/40 transition-all";
             card.innerHTML = `
-                <div class="text-[9px] text-clinical-500 font-black uppercase mb-1">${camp.region}</div>
-                <h4 class="text-xs font-bold text-white mb-2 uppercase tracking-tight">${camp.title}</h4>
-                <div class="bg-carbon-900 rounded-lg p-2 mb-3 border border-white/5">
-                    <div class="text-[7px] text-gray-500 uppercase mb-1">SEO_REASONING</div>
-                    <p class="text-[9px] text-gray-400 italic">${camp.reason}</p>
+                <div class="flex justify-between items-start mb-2">
+                    <div class="text-[9px] text-clinical-500 font-black uppercase tracking-widest">${camp.region}</div>
+                    <span class="text-[8px] bg-carbon-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">ID_${camp.id}</span>
                 </div>
-                ${camp.stage === 'PRODUCTION' ? '<div class="h-1 bg-clinical-500/20 rounded-full mb-3 overflow-hidden"><div class="w-2/3 h-full bg-clinical-500"></div></div>' : ''}
+                <h4 class="text-xs font-bold text-white mb-2 uppercase tracking-tight">${camp.title}</h4>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="bg-carbon-900 rounded-lg p-2 border border-white/5">
+                        <div class="text-[7px] text-gray-500 uppercase mb-1">Estrategia / SEO</div>
+                        <p class="text-[9px] text-gray-400 italic leading-tight">${camp.reason}</p>
+                    </div>
+                    <div class="bg-carbon-900 rounded-lg p-2 border border-white/5">
+                        <div class="text-[7px] text-clinical-400 uppercase mb-1 font-bold">Multimedia Prompt</div>
+                        <p class="text-[8px] text-gray-500 leading-tight truncate">${camp.prompt}</p>
+                    </div>
+                </div>
+
+                ${camp.stage === 'PRODUCTION' ? '<div class="h-1 bg-clinical-500/20 rounded-full mb-4 overflow-hidden"><div class="w-2/3 h-full bg-clinical-500 shadow-[0_0_10px_#0066ff]"></div></div>' : ''}
+                
                 <div class="flex gap-2">
-                    <button class="flex-1 py-1.5 bg-carbon-900 text-[8px] font-black uppercase border border-white/5 hover:bg-clinical-500 transition-all">Editar</button>
-                    <button class="flex-1 py-1.5 bg-clinical-500 text-white text-[8px] font-black uppercase hover:bg-clinical-400 transition-all shadow-md">Ver Detalle</button>
+                    <button onclick="openModal('edit_camp', ${JSON.stringify(camp).replace(/"/g, '&quot;')})" class="flex-1 py-1.5 bg-carbon-900 text-[8px] font-black uppercase border border-white/5 hover:bg-clinical-500 transition-all">Editar</button>
+                    <button onclick="openModal('campaign_detail', ${JSON.stringify(camp).replace(/"/g, '&quot;')})" class="flex-1 py-1.5 bg-clinical-500 text-white text-[8px] font-black uppercase hover:bg-clinical-400 transition-all shadow-md">Ver Detalle</button>
                 </div>
             `;
             container.appendChild(card);
@@ -340,12 +379,55 @@ function openModal(type) {
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Región de Impacto</label>
                     <select class="w-full bg-carbon-900 border border-white/5 rounded-xl p-4 text-white outline-none focus:border-clinical-500">
-                        <option>CDMX - Santa Fe</option>
                         <option>Puebla - Angelópolis</option>
-                        <option>Guadalajara - Puerta de Hierro</option>
+                        <option>Oaxaca - Zona Central</option>
+                        <option>Veracruz - Puerto</option>
                     </select>
                 </div>
                 <button class="w-full bg-clinical-500 text-white font-black py-4 rounded-xl mt-4 hover:bg-clinical-400 transition-all">INICIAR PROCESAMIENTO NEURAL</button>
+            </div>
+        `;
+    } else if (type === 'campaign_detail') {
+        const camp = arguments[1];
+        content.innerHTML = `
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <div class="text-[10px] text-clinical-400 font-black uppercase tracking-[0.2em] mb-1">Expediente de Campaña</div>
+                    <h2 class="text-2xl font-black text-white uppercase">${camp.title}</h2>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] text-gray-500 uppercase font-mono">Región</div>
+                    <div class="text-lg font-black text-white uppercase">${camp.region}</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div class="bg-carbon-900 p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Estrategia & Razonamiento</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed italic border-l-2 border-clinical-500 pl-4">${camp.reason}</p>
+                    </div>
+                    <div class="bg-carbon-900 p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Alcance Estimado</h3>
+                        <div class="text-2xl font-black text-clinical-400">${camp.scope}</div>
+                        <p class="text-[10px] text-gray-500 mt-2 uppercase">Datos basados en analítica Meta Business Suite</p>
+                    </div>
+                </div>
+                <div class="bg-carbon-900 p-6 rounded-2xl border border-clinical-500/20">
+                    <h3 class="text-[10px] font-black text-clinical-400 uppercase mb-4 tracking-widest">Multimedia Neural Prompt</h3>
+                    <div class="bg-black/50 p-4 rounded-xl border border-white/5 font-mono text-[11px] text-gray-400 leading-relaxed mb-6">
+                        ${camp.prompt}
+                    </div>
+                    <div class="p-4 border-2 border-dashed border-white/10 rounded-xl text-center">
+                        <span class="material-symbols-outlined text-3xl text-gray-800 mb-2">image_search</span>
+                        <p class="text-[9px] text-gray-600 uppercase font-bold">IA analizando renders quirúrgicos...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-10 flex gap-4">
+                <button onclick="closeOverlay()" class="flex-1 py-4 border border-white/5 text-gray-500 font-black uppercase rounded-xl hover:text-white transition-all">Cerrar</button>
+                <button class="flex-1 py-4 bg-clinical-500 text-white font-black uppercase rounded-xl hover:bg-clinical-400 transition-all">Aprobar para Meta Ads</button>
             </div>
         `;
     } else if (type === 'upload') {
