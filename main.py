@@ -111,6 +111,7 @@ app = FastAPI(title="Ortho-Cardio CRM Búnker API")
 async def startup_event():
     ensure_schema_sync()
     seed_demo_data()
+    asyncio.create_task(swarm_heartbeat())
 
 # Configurar templates
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -164,6 +165,27 @@ class ConnectionManager:
                 continue
 
 manager = ConnectionManager()
+
+async def broadcast_swarm_task(agent: str, task: str):
+    await manager.broadcast({
+        "type": "swarm_task",
+        "agent": agent,
+        "task": task
+    })
+
+async def swarm_heartbeat():
+    tasks = [
+        ("SEO_AGENT", "Analizando saturación de keywords 'Cirugía Robótica'..."),
+        ("SOURCING_AGENT", "Verificando disponibilidad de implantes en puerto CDMX..."),
+        ("CRM_AGENT", "Actualizando perfiles clínicos de leads de Instagram..."),
+        ("INVENTORY_AGENT", "Auditando stock de insumos quirúrgicos..."),
+        ("MARKETING_AGENT", "Refinando prompts de Nano Banana para campaña Puebla...")
+    ]
+    import random
+    while True:
+        await asyncio.sleep(random.randint(10, 20))
+        agent, task = random.choice(tasks)
+        await broadcast_swarm_task(agent, task)
 
 # --- API ENDPOINTS ---
 
@@ -382,9 +404,11 @@ async def process_meta_payload(body: Dict[Any, Any]):
                             })
 
                             if contact.is_ai_active:
+                                await broadcast_swarm_task("NEURAL_CORE", f"Analizando intención de +{sender_id}...")
                                 response = await orchestrator.handle_message(
                                     message_text, sender_id, contact.name or "Doctor", contact.hospital or "Hospital"
                                 )
+                                await broadcast_swarm_task("CRM_AGENT", f"Respuesta generada para {contact.name or sender_id}")
                                 
                                 if isinstance(response, str):
                                     await save_and_send_message(db, sender_id, response, phone_number_id)

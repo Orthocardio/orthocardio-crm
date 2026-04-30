@@ -91,6 +91,8 @@ function setupWebSocket() {
                 scrollToBottom();
             }
             addLog("SWARM", `Interceptado mensaje en nodo +${data.phone_number}`);
+        } else if (data.type === "swarm_task") {
+            renderSwarmTask(data.agent, data.task);
         }
     };
     ws.onclose = () => setTimeout(setupWebSocket, 3000);
@@ -308,27 +310,20 @@ function addLog(type, message) {
     container.prepend(line);
 }
 
-function startSwarmFeedSimulation() {
+function renderSwarmTask(agent, task) {
     const container = document.getElementById("swarm-feed");
-    const tasks = [
-        "SEO_AGENT: Analizando saturación de palabras clave 'Artroscopia' en CDMX...",
-        "SOURCING_AGENT: Comparando precios de implantes titanio en Alibaba vs Proveedor Local...",
-        "CRM_AGENT: Perfilando sentimiento de Dr. García (Nivel: Interés Alto)...",
-        "MARKETING_AGENT: Generando variaciones de copy para Instagram Story #04...",
-        "SYSTEM_WATCHDOG: Verificando latencia en Webhook de Meta API...",
-        "INVENTORY_AGENT: Detectado stock bajo en Prótesis Cadera (Hospital Puebla)..."
-    ];
+    if (!container) return;
     
-    setInterval(() => {
-        if (Math.random() > 0.6) {
-            const task = tasks[Math.floor(Math.random() * tasks.length)];
-            const line = document.createElement("div");
-            line.className = "text-[8px] py-1 border-l-2 border-clinical-500 pl-2 mb-1 bg-clinical-500/5 animate-pulse";
-            line.innerHTML = `<span class="text-clinical-400 font-black">ACTIVE_TASK:</span> ${task}`;
-            container.prepend(line);
-            if (container.children.length > 5) container.lastChild.remove();
-        }
-    }, 4000);
+    const line = document.createElement("div");
+    line.className = "text-[8px] py-1 border-l-2 border-clinical-500 pl-2 mb-1 bg-clinical-500/5 animate-pulse";
+    line.innerHTML = `<span class="text-clinical-400 font-black">${agent}:</span> ${task}`;
+    container.prepend(line);
+    if (container.children.length > 8) container.lastChild.remove();
+}
+
+function startSwarmFeedSimulation() {
+    // Ya no es necesaria la simulación local, ahora viene del servidor
+    addLog("SYSTEM", "Canal de Enjambre Sincronizado.");
 }
 
 async function sendMessage() {
