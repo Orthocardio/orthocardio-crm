@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Ortho-Cardio | Mission Control Búnker</title>
+    <title>Ortho-Cardio | Omnichannel Mission Control</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
@@ -27,7 +27,10 @@
                             100: '#121212',
                             800: '#0a0a0a',
                             900: '#050505',
-                        }
+                        },
+                        whatsapp: '#25D366',
+                        instagram: '#E1306C',
+                        messenger: '#006AFF'
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -39,17 +42,28 @@
     </script>
     <style>
         .glass { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .glass-border { border-color: rgba(255, 255, 255, 0.08); }
         .clinical-gradient { background: linear-gradient(135deg, #001a40 0%, #050505 100%); }
-        .neon-blue-border { box-shadow: 0 0 10px rgba(0, 102, 255, 0.1); border: 1px solid rgba(0, 102, 255, 0.2); }
         
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
 
         .tab-active { color: #0066ff; border-bottom: 2px solid #0066ff; }
-        .log-line { font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1.4; }
+        .channel-tab-active { background: rgba(0, 102, 255, 0.1); color: white; border-bottom: 2px solid #0066ff; }
+        
+        /* WhatsApp Style Background */
+        #chat-history {
+            background-color: #050505;
+            background-image: url("https://w0.peakpx.com/wallpaper/580/650/HD-wallpaper-whatsapp-dark-pattern-whatsapp-doodle-whatsapp-background.jpg");
+            background-blend-mode: overlay;
+            background-size: 400px;
+            opacity: 0.9;
+        }
+
+        .message-bubble-ai { border-bottom-left-radius: 2px; }
+        .message-bubble-user { border-bottom-right-radius: 2px; }
+        .message-bubble-human { border-bottom-right-radius: 2px; background: #0052cc; }
     </style>
 </head>
 <body class="bg-carbon-900 text-gray-200 font-sans h-screen overflow-hidden flex flex-col">
@@ -59,78 +73,75 @@
     <!-- MAIN NAV -->
     <nav class="h-16 border-b border-white/5 bg-carbon-800/50 backdrop-blur-md flex items-center justify-between px-6 flex-shrink-0">
         <div class="flex items-center gap-8">
-            <div class="flex items-center gap-3" onclick="location.reload()" style="cursor: pointer;">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
                 <div class="w-8 h-8 bg-clinical-500 rounded flex items-center justify-center">
                     <span class="material-symbols-outlined text-white text-xl">orthopedics</span>
                 </div>
                 <div>
                     <span class="text-sm font-black tracking-tighter text-white uppercase">Ortho-Cardio</span>
-                    <div class="text-[9px] text-clinical-400 font-mono leading-none tracking-widest">BÚNKER v2.0</div>
+                    <div class="text-[9px] text-clinical-400 font-mono leading-none tracking-widest uppercase">Mission Control</div>
                 </div>
             </div>
             
             <div class="h-8 w-[1px] bg-white/5 mx-2"></div>
 
-            <div class="flex gap-6">
+            <div class="flex gap-6 h-full">
                 <button onclick="switchTab('crm')" id="tab-btn-crm" class="text-xs font-bold uppercase tracking-widest transition-all tab-active flex items-center gap-2 py-5">
-                    <span class="material-symbols-outlined text-sm">hub</span> CRM Clínico
+                    <span class="material-symbols-outlined text-sm">hub</span> CRM Omnicanal
                 </button>
                 <button onclick="switchTab('marketing')" id="tab-btn-marketing" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center gap-2 py-5">
                     <span class="material-symbols-outlined text-sm">campaign</span> Marketing Staging
                 </button>
                 <button onclick="switchTab('telemetry')" id="tab-btn-telemetry" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center gap-2 py-5">
-                    <span class="material-symbols-outlined text-sm">terminal</span> Telemetría
+                    <span class="material-symbols-outlined text-sm">terminal</span> Watchdog Logs
                 </button>
             </div>
         </div>
 
-        <div class="flex items-center gap-6">
-            <div class="flex flex-col items-end mr-4">
-                <span class="text-[10px] font-bold text-white uppercase">Carlos Cortés</span>
-                <span class="text-[9px] text-clinical-400 font-mono">ROOT_ACCESS</span>
+        <div class="flex items-center gap-4">
+            <div class="bg-carbon-800 border border-white/5 px-4 py-1.5 rounded-full flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-[10px] font-mono text-gray-400">NODES_ONLINE: 04</span>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-gray-500 hover:text-clinical-400 cursor-pointer">notifications</span>
-                <div class="w-10 h-10 rounded-full border border-clinical-500/30 p-0.5">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos" class="w-full h-full rounded-full bg-carbon-50"/>
-                </div>
+            <div class="w-10 h-10 rounded-full border border-clinical-500/30 p-0.5">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos" class="w-full h-full rounded-full bg-carbon-50"/>
             </div>
         </div>
     </nav>
 
     <div class="flex flex-1 overflow-hidden">
-        <!-- SIDEBAR (Dynamic based on Tab) -->
-        <aside id="main-sidebar" class="w-[320px] border-r border-white/5 bg-carbon-800/30 flex flex-col h-full flex-shrink-0 transition-all">
+        <!-- SIDEBAR (WhatsApp Web Style) -->
+        <aside id="main-sidebar" class="w-[400px] border-r border-white/5 bg-carbon-800/30 flex flex-col h-full flex-shrink-0 transition-all">
+            <!-- Channel Selection -->
+            <div class="flex border-b border-white/5 h-12 flex-shrink-0">
+                <button onclick="switchChannel('whatsapp')" id="chan-whatsapp" class="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-tighter channel-tab-active border-r border-white/5 transition-all">
+                    <span class="material-symbols-outlined text-sm text-whatsapp">chat</span> WhatsApp
+                </button>
+                <button onclick="switchChannel('instagram')" id="chan-instagram" class="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-tighter text-gray-500 border-r border-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-sm text-instagram">photo_camera</span> Instagram
+                </button>
+                <button onclick="switchChannel('messenger')" id="chan-messenger" class="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-tighter text-gray-500 hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-sm text-messenger">send</span> Messenger
+                </button>
+            </div>
+
             <!-- CRM Sidebar Content -->
             <div id="sidebar-crm" class="flex flex-col h-full">
-                <div class="p-6 border-b border-white/5">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Leads Quirúrgicos</h2>
-                        <span class="bg-clinical-500/10 text-clinical-400 text-[9px] px-2 py-0.5 rounded border border-clinical-500/20" id="contact-count">0 PACIENTES</span>
-                    </div>
+                <div class="p-4 bg-carbon-800/20">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-sm">search</span>
-                        <input type="text" placeholder="Buscar especialista o clínica..." class="w-full bg-carbon-900 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-xs focus:border-clinical-500 transition-all outline-none"/>
+                        <input type="text" placeholder="Buscar en el búnker..." class="w-full bg-carbon-900 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:border-clinical-500 transition-all outline-none"/>
                     </div>
                 </div>
                 <div class="flex-1 overflow-y-auto" id="contact-list">
                     <!-- High density contacts here -->
-                    <div class="p-8 text-center text-gray-600 text-[10px] uppercase tracking-widest italic">Cargando Red de Contactos...</div>
+                    <div class="p-12 text-center text-gray-600 text-[10px] uppercase tracking-widest italic">Iniciando Sincronización...</div>
                 </div>
             </div>
             
-            <!-- Marketing Sidebar Content -->
-            <div id="sidebar-marketing" class="hidden flex flex-col h-full p-6">
+            <div id="sidebar-marketing" class="hidden flex flex-col h-full p-6 bg-carbon-800/10">
                 <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">Filtros de Campaña</h2>
-                <div class="space-y-4">
-                    <div class="p-4 rounded-xl bg-clinical-900/30 border border-clinical-500/20">
-                        <span class="text-[10px] font-bold text-clinical-400 block mb-2 uppercase">Canales Activos</span>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[9px] bg-carbon-900 px-2 py-1 rounded text-white border border-white/5">Instagram</span>
-                            <span class="text-[9px] bg-carbon-900 px-2 py-1 rounded text-white border border-white/5">LinkedIn</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- Filters here -->
             </div>
         </aside>
 
@@ -138,71 +149,95 @@
         <main class="flex-1 relative bg-carbon-900 overflow-hidden flex flex-col h-full">
             
             <!-- TAB: CRM -->
-            <div id="tab-crm" class="flex-1 flex overflow-hidden">
-                <div class="flex-1 flex flex-col h-full">
+            <div id="tab-crm" class="flex-1 flex overflow-hidden h-full">
+                <div class="flex-1 flex flex-col h-full border-r border-white/5">
                     <!-- Chat Header -->
-                    <div id="chat-header" class="h-16 border-b border-white/5 px-8 flex items-center justify-between bg-carbon-800/20 hidden">
+                    <div id="chat-header" class="h-16 border-b border-white/5 px-6 flex items-center justify-between bg-carbon-800/40 backdrop-blur-md hidden">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-xl clinical-gradient border border-clinical-500/30 flex items-center justify-center text-clinical-400 font-bold uppercase" id="active-avatar">?</div>
+                            <div class="w-10 h-10 rounded-full clinical-gradient border border-clinical-500/30 flex items-center justify-center text-clinical-400 font-bold uppercase shadow-lg shadow-blue-500/10" id="active-avatar">?</div>
                             <div>
-                                <h1 class="text-sm font-bold text-white leading-none" id="active-name">Seleccione un chat</h1>
-                                <span class="text-[10px] text-gray-500 font-mono mt-1 block uppercase tracking-tighter" id="active-details">...</span>
+                                <div class="flex items-center gap-2">
+                                    <h1 class="text-sm font-bold text-white leading-none" id="active-name">...</h1>
+                                    <span id="active-channel-icon" class="material-symbols-outlined text-[14px]">chat</span>
+                                </div>
+                                <span class="text-[10px] text-gray-500 font-mono mt-1 block uppercase tracking-tighter" id="active-details">CARGANDO NODO...</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-3 bg-carbon-800 px-4 py-2 rounded-full border border-white/5">
-                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter" id="ai-mode-label">IA ACTIVA</span>
+                        <div class="flex items-center gap-6">
+                            <div class="flex items-center gap-3 bg-carbon-900/50 px-4 py-2 rounded-xl border border-white/5">
+                                <div id="ai-indicator-dot" class="w-2 h-2 rounded-full bg-clinical-500 animate-pulse"></div>
+                                <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest" id="ai-mode-label">IA ACTIVA</span>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="ai-toggle" class="sr-only peer" onchange="toggleAiMode()">
-                                    <div class="w-8 h-4 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-clinical-500"></div>
+                                    <div class="w-7 h-4 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-clinical-500 peer-checked:after:bg-white"></div>
                                 </label>
                             </div>
+                            <span class="material-symbols-outlined text-gray-500 cursor-pointer hover:text-white">more_vert</span>
                         </div>
                     </div>
 
-                    <!-- Chat History -->
-                    <div id="chat-history" class="flex-1 overflow-y-auto px-8 py-8 flex flex-col gap-6 h-full relative">
-                        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center opacity-40">
-                            <span class="material-symbols-outlined text-6xl mb-4 text-clinical-500">monitoring</span>
-                            <h2 class="text-lg font-black uppercase tracking-widest text-white">Consola de Operaciones</h2>
-                            <p class="text-xs text-gray-500 mt-2">Seleccione un nodo en el panel izquierdo para interceptar la comunicación.</p>
+                    <!-- Chat History (WhatsApp Web Style) -->
+                    <div id="chat-history" class="flex-1 overflow-y-auto px-12 py-10 flex flex-col h-full scroll-smooth">
+                        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center bg-carbon-900 z-10">
+                            <div class="w-24 h-24 bg-clinical-500/10 rounded-full flex items-center justify-center mb-6 border border-clinical-500/20">
+                                <span class="material-symbols-outlined text-4xl text-clinical-500">terminal</span>
+                            </div>
+                            <h2 class="text-lg font-black uppercase tracking-widest text-white">Consola de Control Ortho-Cardio</h2>
+                            <p class="text-xs text-gray-500 mt-2 max-w-xs text-center leading-relaxed">Seleccione un lead de la lista para interceptar la señal y comenzar la gestión clínica.</p>
                         </div>
                     </div>
 
                     <!-- Input Area -->
-                    <div id="input-area" class="p-6 border-t border-white/5 bg-carbon-800/20 hidden">
-                        <div class="max-w-4xl mx-auto relative">
-                            <textarea id="message-input" onkeypress="handleKeyPress(event)" placeholder="Escribir instrucción o mensaje clínico..." class="w-full bg-carbon-800 border border-white/10 rounded-2xl py-4 pl-6 pr-24 text-sm text-white focus:border-clinical-500 transition-all outline-none resize-none h-[60px]"></textarea>
-                            <button onclick="sendMessage()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-clinical-500 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-clinical-400 transition-all">ENVIAR</button>
+                    <div id="input-area" class="p-4 border-t border-white/5 bg-carbon-800/40 backdrop-blur-md hidden">
+                        <div class="max-w-4xl mx-auto flex items-center gap-4">
+                            <button class="text-gray-500 hover:text-white transition-colors">
+                                <span class="material-symbols-outlined">sentiment_satisfied</span>
+                            </button>
+                            <button class="text-gray-500 hover:text-white transition-colors">
+                                <span class="material-symbols-outlined">attach_file</span>
+                            </button>
+                            <div class="flex-1 relative">
+                                <textarea id="message-input" onkeypress="handleKeyPress(event)" placeholder="Escribir mensaje..." class="w-full bg-carbon-900 border border-white/10 rounded-xl py-3 px-5 text-sm text-white focus:border-clinical-500 transition-all outline-none resize-none h-[44px]"></textarea>
+                            </div>
+                            <button onclick="sendMessage()" class="w-10 h-10 bg-clinical-500 text-white rounded-full flex items-center justify-center hover:bg-clinical-400 transition-all shadow-lg shadow-blue-500/20">
+                                <span class="material-symbols-outlined text-lg">send</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- RIGHT PANEL: TELEMETRY (Watchdog) -->
-                <div class="w-[350px] border-l border-white/5 bg-carbon-800/10 flex flex-col flex-shrink-0">
-                    <div class="p-6 border-b border-white/5">
-                        <h2 class="text-[10px] font-black text-clinical-400 uppercase tracking-widest mb-4">Watchdog Telemetry</h2>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 bg-carbon-900 border border-white/5 rounded-lg">
-                                <span class="text-[8px] text-gray-500 uppercase block">IA Uptime</span>
-                                <span class="text-xs font-mono text-white">99.9%</span>
+                <!-- RIGHT PANEL: TELEMETRY -->
+                <div class="w-[380px] bg-carbon-900 flex flex-col flex-shrink-0">
+                    <div class="p-6 border-b border-white/5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-[10px] font-black text-clinical-400 uppercase tracking-widest">Watchdog Telemetry</h2>
+                            <span class="text-[8px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-bold">HEALTH: 100%</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="p-3 bg-carbon-800/50 border border-white/5 rounded-xl">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-[10px] text-gray-500">timer</span>
+                                    <span class="text-[8px] text-gray-500 uppercase">Uptime</span>
+                                </div>
+                                <span class="text-xs font-mono text-white">247:15:02</span>
                             </div>
-                            <div class="p-3 bg-carbon-900 border border-white/5 rounded-lg">
-                                <span class="text-[8px] text-gray-500 uppercase block">Threads</span>
-                                <span class="text-xs font-mono text-green-500">ACTIVE</span>
+                            <div class="p-3 bg-carbon-800/50 border border-white/5 rounded-xl">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-[10px] text-gray-500">bolt</span>
+                                    <span class="text-[8px] text-gray-500 uppercase">Latency</span>
+                                </div>
+                                <span class="text-xs font-mono text-clinical-400">42ms</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex-1 p-4 overflow-hidden flex flex-col">
-                        <div class="flex-1 bg-black rounded-lg p-3 font-mono border border-white/5 flex flex-col overflow-hidden shadow-inner">
-                            <div class="text-[9px] text-clinical-400 mb-2 border-b border-white/5 pb-1 flex justify-between">
-                                <span>LIVE SYSTEM LOGS</span>
-                                <span class="animate-pulse">●</span>
+                        <div class="flex-1 bg-black/50 rounded-2xl p-4 font-mono border border-white/5 flex flex-col overflow-hidden">
+                            <div class="text-[9px] text-gray-600 mb-3 flex justify-between items-center border-b border-white/5 pb-2">
+                                <span>LIVE_SYSTEM_LOGS</span>
+                                <span class="text-clinical-400 animate-pulse">RECORDING...</span>
                             </div>
-                            <div id="watchdog-logs" class="flex-1 overflow-y-auto space-y-1 text-[10px]">
+                            <div id="watchdog-logs" class="flex-1 overflow-y-auto space-y-1.5 text-[9px] pr-2">
                                 <!-- Logs will stream here -->
-                                <div class="text-gray-600">[SYSTEM] Initialization complete...</div>
-                                <div class="text-gray-600">[SDR_AGENT] Monitoring incoming threads...</div>
                             </div>
                         </div>
                     </div>
@@ -210,45 +245,22 @@
             </div>
 
             <!-- TAB: MARKETING -->
-            <div id="tab-marketing" class="flex-1 overflow-y-auto p-12 hidden">
-                <div class="max-w-6xl mx-auto">
-                    <header class="mb-12 flex justify-between items-end">
-                        <div>
-                            <h1 class="text-3xl font-black text-white tracking-tighter uppercase">Marketing Staging</h1>
-                            <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Centro de Mando Creativo - Ortho-Cardio Búnker</p>
-                        </div>
-                        <button class="bg-clinical-500 text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-clinical-500/20">
-                            <span class="material-symbols-outlined text-sm">add_circle</span> Crear Nueva Campaña
-                        </button>
-                    </header>
-                    
-                    <div id="marketing-grid" class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <!-- Campaign Cards will be injected here -->
-                        <div class="p-20 text-center col-span-full opacity-30 italic">Sincronizando con el Motor Creativo...</div>
-                    </div>
-                </div>
+            <div id="tab-marketing" class="flex-1 overflow-y-auto p-12 hidden bg-[#050505]">
+                <!-- Marketing Grid Here -->
             </div>
 
-            <!-- TAB: TELEMETRY (Fullscreen) -->
-            <div id="tab-telemetry" class="flex-1 p-12 hidden flex flex-col">
-                <h1 class="text-xl font-black text-white mb-8 uppercase tracking-widest">System Telemetry Console</h1>
-                <div class="flex-1 bg-black border border-clinical-500/20 rounded-2xl p-8 font-mono text-sm overflow-hidden flex flex-col relative">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-clinical-500 animate-pulse"></div>
-                    <div id="fullscreen-logs" class="flex-1 overflow-y-auto space-y-2">
-                        <!-- Full logs here -->
-                        <div class="text-green-500">[AUTH] Root access verified for Carlos Cortés</div>
-                        <div class="text-clinical-400">[CORE] Resiliency engine online: gemini-2.5-flash</div>
-                    </div>
-                </div>
+            <!-- TAB: TELEMETRY -->
+            <div id="tab-telemetry" class="flex-1 p-12 hidden flex flex-col bg-black">
+                <!-- Full Telemetry Here -->
             </div>
 
         </main>
     </div>
 
-    <!-- MODALS / OVERLAYS -->
-    <div id="overlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-8">
-        <div class="max-w-4xl w-full bg-carbon-800 border border-white/10 rounded-3xl p-10 relative shadow-2xl">
-            <button onclick="closeOverlay()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-all">
+    <!-- MODALS -->
+    <div id="overlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] hidden flex items-center justify-center p-8">
+        <div class="max-w-4xl w-full bg-carbon-800 border border-white/10 rounded-3xl p-10 relative">
+            <button onclick="closeOverlay()" class="absolute top-6 right-6 text-gray-500 hover:text-white">
                 <span class="material-symbols-outlined">close</span>
             </button>
             <div id="overlay-content"></div>

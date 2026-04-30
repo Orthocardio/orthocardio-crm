@@ -1,70 +1,79 @@
 let currentContactPhone = null;
 let currentTab = 'crm';
+let currentChannel = 'whatsapp';
 let ws = null;
-let logCount = 0;
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
     loadContacts();
     setupWebSocket();
     startWatchdogSimulation();
-    
-    // Auto-switch to CRM initially
     switchTab('crm');
 });
 
 function switchTab(tabId) {
     currentTab = tabId;
-    
-    // Update buttons
     const tabs = ['crm', 'marketing', 'telemetry'];
     tabs.forEach(t => {
         const btn = document.getElementById(`tab-btn-${t}`);
         const view = document.getElementById(`tab-${t}`);
-        const sidebar = document.getElementById(`sidebar-${t}`);
-        
         if (t === tabId) {
             btn.classList.add('tab-active');
             btn.classList.remove('text-gray-500');
             view.classList.remove('hidden');
-            if (sidebar) sidebar.classList.remove('hidden');
         } else {
             btn.classList.remove('tab-active');
             btn.classList.add('text-gray-500');
             view.classList.add('hidden');
-            if (sidebar) sidebar.classList.add('hidden');
         }
     });
 
-    if (tabId === 'marketing') {
-        loadMarketingCampaigns();
-    }
+    if (tabId === 'marketing') loadMarketingCampaigns();
+}
+
+function switchChannel(channel) {
+    currentChannel = channel;
+    const channels = ['whatsapp', 'instagram', 'messenger'];
+    channels.forEach(c => {
+        const btn = document.getElementById(`chan-${c}`);
+        if (c === channel) {
+            btn.classList.add('channel-tab-active');
+            btn.classList.remove('text-gray-500');
+        } else {
+            btn.classList.remove('channel-tab-active');
+            btn.classList.add('text-gray-500');
+        }
+    });
+    // Filter contacts based on channel (simulated for now)
+    loadContacts();
 }
 
 function setupWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
 
-    ws.onopen = () => {
-        addLog("SYSTEM", "Conexión WebSocket establecida con el Búnker Central.");
-    };
+    ws.onopen = () => addLog("SYSTEM", "Conexión táctica con el Búnker Central establecida.");
 
     ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === "new_message") {
-            loadContacts();
-            if (currentContactPhone === data.phone_number) {
-                appendMessage(data.message);
-                scrollToBottom();
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === "new_message") {
+                loadContacts();
+                if (currentContactPhone === data.phone_number) {
+                    appendMessage(data.message);
+                    scrollToBottom();
+                }
+                addLog("WATCHDOG", `Intercepción de mensaje en canal +${data.phone_number}`);
+            } else if (data.type === "contact_update") {
+                loadContacts();
             }
-            addLog("WATCHDOG", `Nuevo mensaje detectado de +${data.phone_number}`);
-        } else if (data.type === "contact_update") {
-            loadContacts();
+        } catch (e) {
+            console.error("Error procesando WS data", e);
         }
     };
 
     ws.onclose = () => {
-        addLog("WARNING", "WebSocket desconectado. Reintentando en 3s...");
+        addLog("WARNING", "Señal perdida. Reintentando reconexión...");
         setTimeout(setupWebSocket, 3000);
     };
 }
@@ -72,46 +81,62 @@ function setupWebSocket() {
 async function loadContacts() {
     try {
         const res = await fetch('/api/contacts');
-        const contacts = await res.json();
+        const data = await res.json();
+        
+        // Fix: Ensure data is an array
+        const contacts = Array.isArray(data) ? data : [];
         
         const list = document.getElementById("contact-list");
-        const countEl = document.getElementById("contact-count");
         list.innerHTML = "";
-        countEl.innerText = `${contacts.length} PACIENTES`;
 
         if (contacts.length === 0) {
-            list.innerHTML = '<div class="p-8 text-center text-gray-600 text-[10px] italic">Sin prospectos activos</div>';
+            list.innerHTML = '<div class="p-12 text-center text-gray-700 text-[10px] uppercase tracking-widest italic">Sin nodos detectados en este canal</div>';
             return;
         }
 
         contacts.forEach(c => {
             const isActive = currentContactPhone === c.phone_number;
             const item = document.createElement("div");
-            item.className = `p-4 cursor-pointer border-b border-white/5 transition-all duration-300 ${isActive ? 'bg-clinical-500/10 border-l-4 border-l-clinical-500' : 'hover:bg-white/5 border-l-4 border-l-transparent'}`;
+            
+            // WhatsApp Web Style classes
+            item.className = `flex items-center gap-4 p-4 cursor-pointer border-b border-white/5 transition-all duration-200 ${isActive ? 'bg-carbon-800' : 'hover:bg-carbon-800/40'}`;
             
             item.onclick = () => selectContact(c);
             
-            const specialty = c.role || (c.phone_number.endsWith('0') ? 'Columna Vertebral' : 'Artroscopia');
-            const statusBadge = `<span class="text-[8px] px-1.5 py-0.5 rounded font-black uppercase ${c.status === 'COLD_LEAD' ? 'bg-amber-500/10 text-amber-500' : 'bg-green-500/10 text-green-500'}">${c.status || 'PENDING'}</span>`;
-            
+            // Icon based on channel
+            let channelIcon = 'chat';
+            let iconColor = 'text-whatsapp';
+            if (c.phone_number.endsWith('1')) { channelIcon = 'photo_camera'; iconColor = 'text-instagram'; }
+            if (c.phone_number.endsWith('2')) { channelIcon = 'send'; iconColor = 'text-messenger'; }
+
+            const statusColor = c.status === 'COLD_LEAD' ? 'bg-amber-500' : 'bg-green-500';
+            const specialty = c.role || 'Especialista';
+
             item.innerHTML = `
-                <div class="flex justify-between items-start mb-1">
-                    <span class="text-xs font-bold ${isActive ? 'text-white' : 'text-gray-300'}">${c.name || 'Desconocido'}</span>
-                    ${statusBadge}
+                <div class="relative flex-shrink-0">
+                    <div class="w-12 h-12 rounded-full clinical-gradient border border-white/5 flex items-center justify-center text-clinical-400 font-bold uppercase text-lg shadow-inner">
+                        ${(c.name || "?").charAt(0)}
+                    </div>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 ${statusColor} rounded-full border-2 border-carbon-900"></div>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-[9px] text-clinical-400 font-mono uppercase tracking-tighter">${specialty}</span>
-                    <span class="text-[9px] text-gray-600 font-mono">+${c.phone_number}</span>
-                </div>
-                <div class="mt-2 flex items-center gap-2">
-                    <div class="w-1.5 h-1.5 rounded-full ${c.is_ai_active ? 'bg-clinical-400 animate-pulse' : 'bg-gray-700'}"></div>
-                    <span class="text-[8px] text-gray-500 uppercase tracking-widest">${c.is_ai_active ? 'IA Gestionando' : 'Modo Manual'}</span>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <span class="text-sm font-bold text-white truncate pr-2">${c.name || 'Desconocido'}</span>
+                        <span class="text-[9px] text-gray-500 font-mono">14:02</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-1.5 overflow-hidden">
+                            <span class="material-symbols-outlined text-[12px] ${iconColor}">${channelIcon}</span>
+                            <span class="text-[11px] text-gray-500 truncate font-medium">${specialty}</span>
+                        </div>
+                        ${c.is_ai_active ? '<span class="text-[8px] bg-clinical-500/10 text-clinical-400 px-1 rounded font-black tracking-tighter">IA</span>' : ''}
+                    </div>
                 </div>
             `;
             list.appendChild(item);
         });
     } catch (e) {
-        addLog("ERROR", `Falla al cargar contactos: ${e.message}`);
+        addLog("ERROR", `Error en red de contactos: ${e.message}`);
     }
 }
 
@@ -123,28 +148,47 @@ async function selectContact(contact) {
     document.getElementById("input-area").classList.remove("hidden");
     
     document.getElementById("active-name").innerText = contact.name || "Desconocido";
-    document.getElementById("active-details").innerText = `${contact.role || 'ESPECIALISTA'} | ${contact.hospital || 'CLÍNICA'}`;
+    document.getElementById("active-details").innerText = `${contact.role || 'ESPECIALISTA'} | ${contact.hospital || 'NODO ACTIVO'}`;
     document.getElementById("active-avatar").innerText = (contact.name || "?").charAt(0);
     
-    // Update toggle
+    // Icon color update
+    let channelIcon = 'chat';
+    let iconColor = 'text-whatsapp';
+    if (contact.phone_number.endsWith('1')) { channelIcon = 'photo_camera'; iconColor = 'text-instagram'; }
+    if (contact.phone_number.endsWith('2')) { channelIcon = 'send'; iconColor = 'text-messenger'; }
+    const iconEl = document.getElementById("active-channel-icon");
+    iconEl.innerText = channelIcon;
+    iconEl.className = `material-symbols-outlined text-[14px] ${iconColor}`;
+
+    // AI toggle
     const toggle = document.getElementById("ai-toggle");
     const label = document.getElementById("ai-mode-label");
+    const dot = document.getElementById("ai-indicator-dot");
     toggle.checked = contact.is_ai_active;
     label.innerText = contact.is_ai_active ? "IA ACTIVA" : "MODO MANUAL";
-    label.className = `text-[9px] font-bold uppercase tracking-tighter ${contact.is_ai_active ? 'text-clinical-400' : 'text-gray-500'}`;
+    label.className = `text-[9px] font-black uppercase tracking-widest ${contact.is_ai_active ? 'text-clinical-400' : 'text-gray-500'}`;
+    dot.className = `w-2 h-2 rounded-full ${contact.is_ai_active ? 'bg-clinical-500 animate-pulse' : 'bg-gray-700'}`;
     
     loadContacts();
     loadMessages(contact.phone_number);
-    addLog("USER", `Abriendo sesión táctica con ${contact.name || contact.phone_number}`);
+    addLog("USER", `Abriendo túnel de comunicación con ${contact.name || contact.phone_number}`);
 }
 
 async function loadMessages(phone) {
     try {
         const res = await fetch(`/api/contacts/${phone}/messages`);
-        const messages = await res.json();
+        const data = await res.json();
+        
+        // Fix: Robust handling of non-array responses
+        if (!Array.isArray(data)) {
+            console.warn("Respuesta de mensajes no es un array:", data);
+            addLog("ERROR", `Error recuperando historial: El servidor no devolvió una lista.`);
+            return;
+        }
+
         const history = document.getElementById("chat-history");
         history.innerHTML = "";
-        messages.forEach(msg => appendMessage(msg));
+        data.forEach(msg => appendMessage(msg));
         scrollToBottom();
     } catch (e) {
         addLog("ERROR", `Error recuperando historial: ${e.message}`);
@@ -156,37 +200,22 @@ function appendMessage(msg) {
     const wrapper = document.createElement("div");
     const isUser = msg.sender_type === 'user';
     const isAi = msg.sender_type === 'ai';
+    const isHuman = msg.sender_type === 'human';
     
-    wrapper.className = `flex w-full ${isUser ? 'justify-start' : 'justify-end'} mb-4`;
+    wrapper.className = `flex w-full ${isUser ? 'justify-start' : 'justify-end'} mb-2`;
     const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
-    let content = '';
-    if (isAi) {
-        content = `
-            <div class="max-w-[85%] bg-carbon-800 border border-clinical-500/20 rounded-2xl p-4 shadow-xl relative">
-                <div class="absolute -top-3 left-4 bg-carbon-900 border border-clinical-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[10px] text-clinical-400">smart_toy</span>
-                    <span class="text-[8px] font-black text-clinical-400 uppercase tracking-tighter">AI CLINICAL AGENT</span>
-                </div>
-                <p class="text-sm text-gray-200 leading-relaxed">${msg.content}</p>
-                <div class="mt-2 text-[8px] text-gray-600 font-mono text-right">${time}</div>
-            </div>
-        `;
-    } else if (isUser) {
-        content = `
-            <div class="max-w-[85%] bg-carbon-800 border border-white/5 rounded-2xl p-4 shadow-lg">
-                <p class="text-sm text-gray-400 leading-relaxed">${msg.content}</p>
-                <div class="mt-2 text-[8px] text-gray-700 font-mono">${time}</div>
-            </div>
-        `;
-    } else {
-        content = `
-            <div class="max-w-[85%] bg-clinical-500 rounded-2xl p-4 shadow-2xl">
-                <p class="text-sm text-white leading-relaxed font-medium">${msg.content}</p>
-                <div class="mt-2 text-[8px] text-blue-200 font-mono text-right">${time}</div>
-            </div>
-        `;
-    }
+    let bubbleClass = isUser ? 'bg-carbon-800 text-gray-200 message-bubble-user' : 
+                      isAi ? 'bg-carbon-800 border border-clinical-500/20 text-gray-200 message-bubble-ai' : 
+                      'bg-clinical-600 text-white message-bubble-human';
+    
+    let content = `
+        <div class="max-w-[75%] px-4 py-2 rounded-2xl shadow-md ${bubbleClass} relative">
+            ${isAi ? '<div class="text-[8px] font-black text-clinical-400 mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">smart_toy</span> AI Agent</div>' : ''}
+            <p class="text-sm leading-relaxed">${msg.content}</p>
+            <div class="text-[9px] ${isHuman ? 'text-blue-200' : 'text-gray-500'} mt-1 text-right font-mono">${time}</div>
+        </div>
+    `;
     
     wrapper.innerHTML = content;
     history.appendChild(wrapper);
@@ -199,7 +228,7 @@ async function sendMessage() {
     if (!text) return;
     
     input.value = "";
-    addLog("SYSTEM", `Transmitiendo mensaje manual a +${currentContactPhone}...`);
+    addLog("SYSTEM", `Transmitiendo instrucción a +${currentContactPhone}...`);
     
     try {
         await fetch(`/api/contacts/${currentContactPhone}/send`, {
@@ -224,103 +253,46 @@ async function toggleAiMode() {
     try {
         const res = await fetch(`/api/contacts/${currentContactPhone}/toggle_ai`, { method: 'POST' });
         const data = await res.json();
-        addLog("WATCHDOG", `Modo IA ${data.is_ai_active ? 'ACTIVADO' : 'DESACTIVADO'} para el canal +${currentContactPhone}`);
+        addLog("WATCHDOG", `Modo IA ${data.is_ai_active ? 'ACTIVADO' : 'DESACTIVADO'} para +${currentContactPhone}`);
         loadContacts();
         
         const label = document.getElementById("ai-mode-label");
+        const dot = document.getElementById("ai-indicator-dot");
         label.innerText = data.is_ai_active ? "IA ACTIVA" : "MODO MANUAL";
-        label.className = `text-[9px] font-bold uppercase tracking-tighter ${data.is_ai_active ? 'text-clinical-400' : 'text-gray-500'}`;
+        label.className = `text-[9px] font-black uppercase tracking-widest ${data.is_ai_active ? 'text-clinical-400' : 'text-gray-500'}`;
+        dot.className = `w-2 h-2 rounded-full ${data.is_ai_active ? 'bg-clinical-500 animate-pulse' : 'bg-gray-700'}`;
     } catch (e) {
         console.error(e);
     }
 }
 
-async function loadMarketingCampaigns() {
-    const grid = document.getElementById("marketing-grid");
-    grid.innerHTML = '<div class="p-20 text-center col-span-full opacity-30 italic">Sincronizando con el Motor Creativo...</div>';
-    
-    try {
-        const res = await fetch('/api/marketing/campaigns');
-        const campaigns = await res.json();
-        grid.innerHTML = "";
-        
-        campaigns.forEach(camp => {
-            const card = document.createElement("div");
-            card.className = "bg-carbon-800 border border-white/5 rounded-3xl p-8 shadow-2xl transition-all hover:border-clinical-500/50 group";
-            
-            const statusColor = camp.status === 'APPROVED' ? 'text-green-500 bg-green-500/10' : 'text-amber-500 bg-amber-500/10';
-            
-            card.innerHTML = `
-                <div class="flex justify-between items-start mb-6">
-                    <span class="text-[10px] font-mono ${statusColor} px-3 py-1 rounded-full border border-current/20">${camp.status}</span>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest">${camp.target_region}</span>
-                </div>
-                <h3 class="text-xl font-black text-white mb-4 group-hover:text-clinical-400 transition-colors">${camp.copy_headline}</h3>
-                <p class="text-sm text-gray-400 mb-8 leading-relaxed">${camp.copy_body}</p>
-                
-                <div class="bg-black/50 rounded-2xl p-4 mb-8 border border-white/5">
-                    <div class="text-[9px] font-black text-gray-600 uppercase mb-2">Visual Prompt (Nano Banana)</div>
-                    <p class="text-[11px] font-mono text-clinical-100 italic">"${camp.nano_banana_prompt}"</p>
-                </div>
-                
-                <div class="rounded-2xl overflow-hidden mb-8 border border-white/5 relative aspect-video">
-                    <img src="${camp.image_url}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"/>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
-                        <div class="text-[10px] text-white font-mono opacity-0 group-hover:opacity-100 transition-opacity">ASSET_PREVIEW_READY</div>
-                    </div>
-                </div>
-                
-                <div class="flex gap-4">
-                    <button class="flex-1 bg-clinical-500 text-white text-[10px] font-black py-3 rounded-xl uppercase tracking-widest hover:bg-clinical-400 transition-all">Aprobar para Instagram</button>
-                    <button class="flex-1 border border-white/10 text-gray-400 text-[10px] font-black py-3 rounded-xl uppercase tracking-widest hover:bg-white/5 transition-all">Refinar Prompt</button>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    } catch (e) {
-        addLog("ERROR", `Falla en el Motor de Marketing: ${e.message}`);
-    }
-}
-
 function addLog(type, message) {
-    const containers = [document.getElementById("watchdog-logs"), document.getElementById("fullscreen-logs")];
+    const container = document.getElementById("watchdog-logs");
+    if (!container) return;
     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+    const colors = { SYSTEM: 'text-gray-500', WATCHDOG: 'text-clinical-400', USER: 'text-white', WARNING: 'text-amber-500', ERROR: 'text-red-500' };
     
-    const colors = {
-        SYSTEM: 'text-gray-500',
-        WATCHDOG: 'text-clinical-400',
-        USER: 'text-white',
-        WARNING: 'text-amber-500',
-        ERROR: 'text-red-500'
-    };
-
-    containers.forEach(container => {
-        if (!container) return;
-        const line = document.createElement("div");
-        line.className = `log-line mb-1 ${colors[type] || 'text-gray-400'}`;
-        line.innerHTML = `<span class="opacity-30">[${time}]</span> <span class="font-bold">[${type}]</span> ${message}`;
-        container.prepend(line);
-        
-        if (container.children.length > 50) container.lastChild.remove();
-    });
+    const line = document.createElement("div");
+    line.className = `log-line mb-1 ${colors[type] || 'text-gray-400'}`;
+    line.innerHTML = `<span class="opacity-30">[${time}]</span> <span class="font-bold">[${type}]</span> ${message}`;
+    container.prepend(line);
+    if (container.children.length > 40) container.lastChild.remove();
 }
 
 function startWatchdogSimulation() {
     const events = [
-        ["WATCHDOG", "Analizando sentimientos en hilo +52..."],
-        ["SYSTEM", "Resiliency Check: 4 nodos activos."],
-        ["WATCHDOG", "Generando borrador de seguimiento para Dr. García."],
-        ["SYSTEM", "Sincronización de base de datos completada."],
-        ["WATCHDOG", "Alerta: Intención de compra detectada en lead 0982."],
-        ["SYSTEM", "Gemini-2.5-Flash respondiendo en 1.2s"]
+        ["WATCHDOG", "Analizando sentimientos en hilo omnicanal..."],
+        ["SYSTEM", "Resiliency Engine: 100% Health"],
+        ["WATCHDOG", "Interceptando lead desde Instagram Direct."],
+        ["SYSTEM", "Sincronización de threads completada."],
+        ["WATCHDOG", "IA detectó urgencia clínica en mensaje 04."],
     ];
-    
     setInterval(() => {
-        if (Math.random() > 0.7) {
+        if (Math.random() > 0.8) {
             const ev = events[Math.floor(Math.random() * events.length)];
             addLog(ev[0], ev[1]);
         }
-    }, 4000);
+    }, 5000);
 }
 
 function scrollToBottom() {
@@ -328,6 +300,4 @@ function scrollToBottom() {
     history.scrollTop = history.scrollHeight;
 }
 
-function closeOverlay() {
-    document.getElementById("overlay").classList.add("hidden");
-}
+function closeOverlay() { document.getElementById("overlay").classList.add("hidden"); }
