@@ -3,197 +3,256 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Ortho-Cardio | Premium Omnichannel CRM</title>
+    <title>Ortho-Cardio | Mission Control Búnker</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    "colors": {
-                        "surface-variant": "#353534",
-                        "primary-fixed": "#d7e2ff",
-                        "on-tertiary-container": "#ffc1bf",
-                        "inverse-primary": "#115cb9",
-                        "on-error-container": "#ffdad6",
-                        "tertiary-fixed": "#ffdad8",
-                        "on-tertiary-fixed-variant": "#92001c",
-                        "error-container": "#93000a",
-                        "surface-container-lowest": "#0e0e0e",
-                        "secondary": "#b9c7e4",
-                        "on-background": "#e5e2e1",
-                        "on-surface-variant": "#c2c6d4",
-                        "surface-bright": "#393939",
-                        "error": "#ffb4ab",
-                        "on-secondary": "#233148",
-                        "secondary-fixed": "#d6e3ff",
-                        "surface": "#131313",
-                        "surface-container-high": "#2a2a2a",
-                        "on-primary-container": "#bbd0ff",
-                        "primary-fixed-dim": "#acc7ff",
-                        "on-tertiary": "#680011",
-                        "tertiary-fixed-dim": "#ffb3b1",
-                        "on-tertiary-fixed": "#410007",
-                        "primary": "#acc7ff",
-                        "surface-container-highest": "#353534",
-                        "on-primary": "#002f67",
-                        "surface-container": "#201f1f",
-                        "on-primary-fixed-variant": "#004491",
-                        "inverse-on-surface": "#313030",
-                        "tertiary-container": "#b30b27",
-                        "inverse-surface": "#e5e2e1",
-                        "outline": "#8c909e",
-                        "tertiary": "#ffb3b1",
-                        "on-error": "#690005",
-                        "on-primary-fixed": "#001a40",
-                        "on-secondary-fixed-variant": "#39475f",
-                        "secondary-container": "#3c4962",
-                        "surface-dim": "#131313",
-                        "primary-container": "#0056b3",
-                        "on-secondary-fixed": "#0d1c32",
-                        "background": "#131313",
-                        "on-surface": "#e5e2e1",
-                        "outline-variant": "#424752",
-                        "secondary-fixed-dim": "#b9c7e4",
-                        "surface-container-low": "#1c1b1b",
-                        "on-secondary-container": "#abb9d6",
-                        "surface-tint": "#acc7ff"
+                    colors: {
+                        clinical: {
+                            50: '#e6f0ff',
+                            100: '#cce1ff',
+                            400: '#3385ff',
+                            500: '#0066ff',
+                            600: '#0052cc',
+                            900: '#001a40',
+                        },
+                        carbon: {
+                            50: '#1a1a1a',
+                            100: '#121212',
+                            800: '#0a0a0a',
+                            900: '#050505',
+                        }
                     },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
             }
         }
     </script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .material-symbols-outlined.fill {
-            font-variation-settings: 'FILL' 1;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #131313; }
-        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #acc7ff; }
-
-        .chat-history { scroll-behavior: smooth; }
+        .glass { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-border { border-color: rgba(255, 255, 255, 0.08); }
+        .clinical-gradient { background: linear-gradient(135deg, #001a40 0%, #050505 100%); }
+        .neon-blue-border { box-shadow: 0 0 10px rgba(0, 102, 255, 0.1); border: 1px solid rgba(0, 102, 255, 0.2); }
         
-        /* Toggle Switch Styles */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #353534; transition: .4s; border-radius: 24px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background-color: white; transition: .4s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: #0056b3; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
+
+        .tab-active { color: #0066ff; border-bottom: 2px solid #0066ff; }
+        .log-line { font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1.4; }
     </style>
 </head>
-<body class="bg-background text-on-background font-body-sm h-screen overflow-hidden flex flex-col">
-    <!-- TopNavBar -->
-    <nav class="bg-[#121212] docked full-width top-0 z-50 border-b border-[#1a1a1a] shadow-lg flex justify-between items-center px-8 h-16 w-full flex-shrink-0">
-        <div class="flex items-center gap-4">
-            <span class="text-xl font-bold tracking-tight text-white">Ortho-Cardio</span>
-            <span class="bg-[#0056b3]/20 text-[#acc7ff] text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-widest">Bunker AI</span>
-        </div>
-        <div class="flex items-center gap-6">
-            <span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer">notifications</span>
-            <span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer">settings</span>
-            <div class="flex items-center gap-2 border-l border-white/10 pl-6">
-                <div class="text-right hidden sm:block">
-                    <div class="text-xs font-bold text-white">Centro de Control</div>
-                    <div class="text-[10px] text-gray-500 uppercase tracking-tighter">Admin Principal</div>
+<body class="bg-carbon-900 text-gray-200 font-sans h-screen overflow-hidden flex flex-col">
+    <!-- TOP STRIP -->
+    <div class="h-1 bg-gradient-to-r from-clinical-600 via-clinical-400 to-carbon-900 w-full"></div>
+
+    <!-- MAIN NAV -->
+    <nav class="h-16 border-b border-white/5 bg-carbon-800/50 backdrop-blur-md flex items-center justify-between px-6 flex-shrink-0">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-3" onclick="location.reload()" style="cursor: pointer;">
+                <div class="w-8 h-8 bg-clinical-500 rounded flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">orthopedics</span>
                 </div>
-                <span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer" style="font-size: 32px;">account_circle</span>
+                <div>
+                    <span class="text-sm font-black tracking-tighter text-white uppercase">Ortho-Cardio</span>
+                    <div class="text-[9px] text-clinical-400 font-mono leading-none tracking-widest">BÚNKER v2.0</div>
+                </div>
+            </div>
+            
+            <div class="h-8 w-[1px] bg-white/5 mx-2"></div>
+
+            <div class="flex gap-6">
+                <button onclick="switchTab('crm')" id="tab-btn-crm" class="text-xs font-bold uppercase tracking-widest transition-all tab-active flex items-center gap-2 py-5">
+                    <span class="material-symbols-outlined text-sm">hub</span> CRM Clínico
+                </button>
+                <button onclick="switchTab('marketing')" id="tab-btn-marketing" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center gap-2 py-5">
+                    <span class="material-symbols-outlined text-sm">campaign</span> Marketing Staging
+                </button>
+                <button onclick="switchTab('telemetry')" id="tab-btn-telemetry" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center gap-2 py-5">
+                    <span class="material-symbols-outlined text-sm">terminal</span> Telemetría
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="flex flex-col items-end mr-4">
+                <span class="text-[10px] font-bold text-white uppercase">Carlos Cortés</span>
+                <span class="text-[9px] text-clinical-400 font-mono">ROOT_ACCESS</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-gray-500 hover:text-clinical-400 cursor-pointer">notifications</span>
+                <div class="w-10 h-10 rounded-full border border-clinical-500/30 p-0.5">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos" class="w-full h-full rounded-full bg-carbon-50"/>
+                </div>
             </div>
         </div>
     </nav>
 
     <div class="flex flex-1 overflow-hidden">
-        <!-- SideNavBar -->
-        <aside class="bg-[#1a1a1a] flex flex-col py-6 px-4 gap-2 w-[300px] flex-shrink-0 h-full border-r border-surface-container">
-            <div class="mb-6 px-2">
-                <h2 class="text-[11px] font-black uppercase text-gray-500 tracking-[0.1em] mb-1">GESTIÓN DE LEADS</h2>
-                <p class="text-xs text-gray-400">Precisión Clínica & CRM</p>
+        <!-- SIDEBAR (Dynamic based on Tab) -->
+        <aside id="main-sidebar" class="w-[320px] border-r border-white/5 bg-carbon-800/30 flex flex-col h-full flex-shrink-0 transition-all">
+            <!-- CRM Sidebar Content -->
+            <div id="sidebar-crm" class="flex flex-col h-full">
+                <div class="p-6 border-b border-white/5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Leads Quirúrgicos</h2>
+                        <span class="bg-clinical-500/10 text-clinical-400 text-[9px] px-2 py-0.5 rounded border border-clinical-500/20" id="contact-count">0 PACIENTES</span>
+                    </div>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-sm">search</span>
+                        <input type="text" placeholder="Buscar especialista o clínica..." class="w-full bg-carbon-900 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-xs focus:border-clinical-500 transition-all outline-none"/>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto" id="contact-list">
+                    <!-- High density contacts here -->
+                    <div class="p-8 text-center text-gray-600 text-[10px] uppercase tracking-widest italic">Cargando Red de Contactos...</div>
+                </div>
             </div>
             
-            <nav class="flex flex-col gap-1 overflow-y-auto pr-2" id="contact-list">
-                <!-- Contacts will be injected here via JS -->
-                <div class="p-4 text-center text-gray-500 text-xs italic">Cargando contactos...</div>
-            </nav>
-
-            <div class="mt-auto p-4 bg-[#121212] rounded-lg border border-white/5">
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sistema Online</div>
+            <!-- Marketing Sidebar Content -->
+            <div id="sidebar-marketing" class="hidden flex flex-col h-full p-6">
+                <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">Filtros de Campaña</h2>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-clinical-900/30 border border-clinical-500/20">
+                        <span class="text-[10px] font-bold text-clinical-400 block mb-2 uppercase">Canales Activos</span>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-[9px] bg-carbon-900 px-2 py-1 rounded text-white border border-white/5">Instagram</span>
+                            <span class="text-[9px] bg-carbon-900 px-2 py-1 rounded text-white border border-white/5">LinkedIn</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col bg-background relative overflow-hidden h-full">
-            <!-- Empty State -->
-            <div id="empty-state" class="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                <div class="max-w-md text-center p-8 border border-white/5 rounded-2xl bg-[#1a1a1a]/50 shadow-2xl">
-                    <span class="material-symbols-outlined text-[#0056b3] text-6xl mb-4">clinical_notes</span>
-                    <h2 class="text-2xl font-bold text-white mb-2">Bienvenido al Búnker</h2>
-                    <p class="text-gray-400 text-sm">Seleccione una conversación en el panel izquierdo para comenzar la gestión omnicanal de Ortho-Cardio.</p>
-                </div>
-            </div>
-
-            <!-- Chat Container (Hidden initially) -->
-            <div id="chat-area" class="flex-1 flex flex-col h-full" style="display: none;">
-                <!-- Chat Header -->
-                <header class="flex items-center justify-between px-8 py-4 border-b border-surface-container bg-surface flex-shrink-0">
-                    <div class="flex flex-col">
-                        <h1 class="text-xl font-bold text-on-surface" id="active-contact-name">Selecciona un chat</h1>
-                        <span class="text-xs text-outline mt-0.5 tracking-wide" id="active-contact-phone"></span>
-                    </div>
-                    <div class="flex items-center gap-4 bg-[#121212] px-4 py-2 rounded-full border border-white/5">
-                        <div class="flex flex-col items-end">
-                            <span class="text-[9px] font-black uppercase tracking-widest text-gray-500" id="ai-status-label">IA ACTIVA</span>
-                            <span class="text-[10px] text-primary-container font-bold" id="ai-mode-text">Asistente Inteligente</span>
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 relative bg-carbon-900 overflow-hidden flex flex-col h-full">
+            
+            <!-- TAB: CRM -->
+            <div id="tab-crm" class="flex-1 flex overflow-hidden">
+                <div class="flex-1 flex flex-col h-full">
+                    <!-- Chat Header -->
+                    <div id="chat-header" class="h-16 border-b border-white/5 px-8 flex items-center justify-between bg-carbon-800/20 hidden">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl clinical-gradient border border-clinical-500/30 flex items-center justify-center text-clinical-400 font-bold uppercase" id="active-avatar">?</div>
+                            <div>
+                                <h1 class="text-sm font-bold text-white leading-none" id="active-name">Seleccione un chat</h1>
+                                <span class="text-[10px] text-gray-500 font-mono mt-1 block uppercase tracking-tighter" id="active-details">...</span>
+                            </div>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" id="ai-toggle" onchange="toggleAiMode()">
-                            <span class="slider"></span>
-                        </label>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3 bg-carbon-800 px-4 py-2 rounded-full border border-white/5">
+                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter" id="ai-mode-label">IA ACTIVA</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="ai-toggle" class="sr-only peer" onchange="toggleAiMode()">
+                                    <div class="w-8 h-4 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-clinical-500"></div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                </header>
 
-                <!-- Chat History -->
-                <div class="flex-1 overflow-y-auto px-8 py-8 flex flex-col gap-6 chat-history" id="chat-history">
-                    <!-- Messages will be injected here -->
+                    <!-- Chat History -->
+                    <div id="chat-history" class="flex-1 overflow-y-auto px-8 py-8 flex flex-col gap-6 h-full relative">
+                        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center opacity-40">
+                            <span class="material-symbols-outlined text-6xl mb-4 text-clinical-500">monitoring</span>
+                            <h2 class="text-lg font-black uppercase tracking-widest text-white">Consola de Operaciones</h2>
+                            <p class="text-xs text-gray-500 mt-2">Seleccione un nodo en el panel izquierdo para interceptar la comunicación.</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div id="input-area" class="p-6 border-t border-white/5 bg-carbon-800/20 hidden">
+                        <div class="max-w-4xl mx-auto relative">
+                            <textarea id="message-input" onkeypress="handleKeyPress(event)" placeholder="Escribir instrucción o mensaje clínico..." class="w-full bg-carbon-800 border border-white/10 rounded-2xl py-4 pl-6 pr-24 text-sm text-white focus:border-clinical-500 transition-all outline-none resize-none h-[60px]"></textarea>
+                            <button onclick="sendMessage()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-clinical-500 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-clinical-400 transition-all">ENVIAR</button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Bottom Input -->
-                <div class="p-6 border-t border-surface-container bg-surface flex-shrink-0">
-                    <div class="flex items-end gap-4 bg-[#121212] p-2 rounded-xl border border-surface-container focus-within:border-[#0056b3] transition-all shadow-inner">
-                        <textarea id="message-input" class="flex-1 bg-transparent border-none text-on-surface text-sm resize-none focus:ring-0 placeholder:text-gray-600 p-3 min-h-[44px] max-h-[150px]" placeholder="Escribir mensaje de seguimiento médico..." rows="1" onkeypress="handleKeyPress(event)"></textarea>
-                        <button onclick="sendMessage()" class="bg-[#0056b3] text-white text-[10px] font-black tracking-widest px-6 py-3 rounded-lg hover:bg-[#004491] transition-all mb-1 h-[44px] flex items-center justify-center uppercase">
-                            Enviar
-                        </button>
+                <!-- RIGHT PANEL: TELEMETRY (Watchdog) -->
+                <div class="w-[350px] border-l border-white/5 bg-carbon-800/10 flex flex-col flex-shrink-0">
+                    <div class="p-6 border-b border-white/5">
+                        <h2 class="text-[10px] font-black text-clinical-400 uppercase tracking-widest mb-4">Watchdog Telemetry</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3 bg-carbon-900 border border-white/5 rounded-lg">
+                                <span class="text-[8px] text-gray-500 uppercase block">IA Uptime</span>
+                                <span class="text-xs font-mono text-white">99.9%</span>
+                            </div>
+                            <div class="p-3 bg-carbon-900 border border-white/5 rounded-lg">
+                                <span class="text-[8px] text-gray-500 uppercase block">Threads</span>
+                                <span class="text-xs font-mono text-green-500">ACTIVE</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-4 overflow-hidden flex flex-col">
+                        <div class="flex-1 bg-black rounded-lg p-3 font-mono border border-white/5 flex flex-col overflow-hidden shadow-inner">
+                            <div class="text-[9px] text-clinical-400 mb-2 border-b border-white/5 pb-1 flex justify-between">
+                                <span>LIVE SYSTEM LOGS</span>
+                                <span class="animate-pulse">●</span>
+                            </div>
+                            <div id="watchdog-logs" class="flex-1 overflow-y-auto space-y-1 text-[10px]">
+                                <!-- Logs will stream here -->
+                                <div class="text-gray-600">[SYSTEM] Initialization complete...</div>
+                                <div class="text-gray-600">[SDR_AGENT] Monitoring incoming threads...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- TAB: MARKETING -->
+            <div id="tab-marketing" class="flex-1 overflow-y-auto p-12 hidden">
+                <div class="max-w-6xl mx-auto">
+                    <header class="mb-12 flex justify-between items-end">
+                        <div>
+                            <h1 class="text-3xl font-black text-white tracking-tighter uppercase">Marketing Staging</h1>
+                            <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Centro de Mando Creativo - Ortho-Cardio Búnker</p>
+                        </div>
+                        <button class="bg-clinical-500 text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-clinical-500/20">
+                            <span class="material-symbols-outlined text-sm">add_circle</span> Crear Nueva Campaña
+                        </button>
+                    </header>
+                    
+                    <div id="marketing-grid" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <!-- Campaign Cards will be injected here -->
+                        <div class="p-20 text-center col-span-full opacity-30 italic">Sincronizando con el Motor Creativo...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: TELEMETRY (Fullscreen) -->
+            <div id="tab-telemetry" class="flex-1 p-12 hidden flex flex-col">
+                <h1 class="text-xl font-black text-white mb-8 uppercase tracking-widest">System Telemetry Console</h1>
+                <div class="flex-1 bg-black border border-clinical-500/20 rounded-2xl p-8 font-mono text-sm overflow-hidden flex flex-col relative">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-clinical-500 animate-pulse"></div>
+                    <div id="fullscreen-logs" class="flex-1 overflow-y-auto space-y-2">
+                        <!-- Full logs here -->
+                        <div class="text-green-500">[AUTH] Root access verified for Carlos Cortés</div>
+                        <div class="text-clinical-400">[CORE] Resiliency engine online: gemini-2.5-flash</div>
+                    </div>
+                </div>
+            </div>
+
         </main>
+    </div>
+
+    <!-- MODALS / OVERLAYS -->
+    <div id="overlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-8">
+        <div class="max-w-4xl w-full bg-carbon-800 border border-white/10 rounded-3xl p-10 relative shadow-2xl">
+            <button onclick="closeOverlay()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-all">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div id="overlay-content"></div>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>

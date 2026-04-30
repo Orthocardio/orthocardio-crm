@@ -157,6 +157,29 @@ manager = ConnectionManager()
 
 # --- API ENDPOINTS ---
 
+@app.get("/api/marketing/campaigns")
+async def get_marketing_campaigns():
+    return [
+        {
+            "id": "camp_001",
+            "status": "PENDING_ASSETS",
+            "target_region": "CDMX / Santa Fe",
+            "copy_headline": "Innovación en Artroscopia de Hombro",
+            "copy_body": "Presentamos el sistema de navegación de última generación para procedimientos mínimamente invasivos. Precisión quirúrgica sin precedentes.",
+            "nano_banana_prompt": "Photorealistic medical surgical room, ultra-modern arthroscopy equipment, blue clinical lighting, cinematic 8k, bokeh background.",
+            "image_url": "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=1000"
+        },
+        {
+            "id": "camp_002",
+            "status": "APPROVED",
+            "target_region": "Puebla / Lomas de Angelópolis",
+            "copy_headline": "Excelencia en Columna Vertebral",
+            "copy_body": "Tu movilidad es nuestra prioridad. Descubre las prótesis inteligentes de Ortho-Cardio.",
+            "nano_banana_prompt": "3D render of a futuristic spine implant, glowing blue accents, carbon fiber textures, dark background, high-tech aesthetic.",
+            "image_url": "https://images.unsplash.com/photo-1579154273821-3df7579f9723?auto=format&fit=crop&q=80&w=1000"
+        }
+    ]
+
 @app.get("/api/health")
 async def health_check():
     return {"status": "online", "timestamp": datetime.datetime.utcnow().isoformat()}
