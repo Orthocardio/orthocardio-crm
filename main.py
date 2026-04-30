@@ -52,6 +52,8 @@ def ensure_schema_sync():
         # Forzar columnas faltantes en 'contacts' usando SQL nativo para mayor compatibilidad
         columns_to_check = [
             ("status", "VARCHAR", "DEFAULT 'PENDING'"),
+            ("source_platform", "VARCHAR", "DEFAULT 'whatsapp'"),
+            ("ai_summary", "TEXT", ""),
             ("followup_draft", "VARCHAR", ""),
             ("last_interaction", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP")
         ]
@@ -82,10 +84,10 @@ def seed_demo_data():
         if db.query(Contact).count() == 0:
             logger.info("Base de datos vacía. Generando contactos demo...")
             demo_contacts = [
-                Contact(phone_number="521234567890", name="Dr. Alejandro Méndez", role="Cardiólogo", hospital="Hospital Ángeles", is_ai_active=True, status="HOT_LEAD"),
-                Contact(phone_number="529876543210", name="Dra. Sofía Reyes", role="Ortopedista", hospital="Centro Médico Siglo XXI", is_ai_active=False, status="COLD_LEAD"),
-                Contact(phone_number="522229998877", name="Dr. Julián Casablancas", role="Cirujano Columna", hospital="Hospital Puebla", is_ai_active=True, status="PENDING"),
-                Contact(phone_number="525554443322", name="Dra. Elena Poniatowska", role="Artroscopia", hospital="Médica Sur", is_ai_active=True, status="CONVERTED")
+                Contact(phone_number="521234567890", name="Dr. Alejandro Méndez", role="Cardiólogo", hospital="Hospital Ángeles", is_ai_active=True, status="HOT_LEAD", source_platform="whatsapp", ai_summary="Interesado en stents de última generación. Alta probabilidad de cierre."),
+                Contact(phone_number="529876543210", name="Dra. Sofía Reyes", role="Ortopedista", hospital="Centro Médico Siglo XXI", is_ai_active=False, status="COLD_LEAD", source_platform="instagram", ai_summary="Preguntó por prótesis de cadera vía DM. Requiere perfilamiento técnico."),
+                Contact(phone_number="522229998877", name="Dr. Julián Casablancas", role="Cirujano Columna", hospital="Hospital Puebla", is_ai_active=True, status="PENDING", source_platform="messenger", ai_summary="Liderazgo en cirugías mínimamente invasivas. Buscando alternativas de sourcing."),
+                Contact(phone_number="525554443322", name="Dra. Elena Poniatowska", role="Artroscopia", hospital="Médica Sur", is_ai_active=True, status="CONVERTED", source_platform="whatsapp", ai_summary="Cliente recurrente. Muy satisfecho con el sistema de navegación.")
             ]
             db.add_all(demo_contacts)
             db.commit()
@@ -203,6 +205,8 @@ def get_contacts(db: Session = Depends(get_db)):
             "hospital": c.hospital,
             "is_ai_active": c.is_ai_active,
             "status": c.status,
+            "source_platform": c.source_platform,
+            "ai_summary": c.ai_summary,
             "followup_draft": c.followup_draft,
             "last_interaction": c.last_interaction.isoformat() if c.last_interaction else None
         } for c in contacts

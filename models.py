@@ -12,11 +12,27 @@ class Contact(Base):
     hospital = Column(String, nullable=True)
     is_ai_active = Column(Boolean, default=True)
     status = Column(String, default="PENDING")
+    source_platform = Column(String, default="whatsapp") # 'whatsapp', 'instagram', 'messenger'
+    ai_summary = Column(String, nullable=True) # Resumen de IA sobre el doctor
     followup_draft = Column(String, nullable=True)
     last_interaction = Column(DateTime, default=datetime.datetime.utcnow)
     
     messages = relationship("Message", back_populates="contact", cascade="all, delete-orphan")
     quote_approvals = relationship("QuoteApproval", back_populates="contact", cascade="all, delete-orphan")
+
+class Campaign(Base):
+    __tablename__ = "campaigns"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    title = Column(String)
+    stage = Column(String, default="STRATEGY") # 'STRATEGY', 'PRODUCTION', 'SCHEDULED'
+    target_region = Column(String)
+    copy_headline = Column(String)
+    copy_body = Column(String)
+    seo_reasoning = Column(String) # Log de razonamiento del agente SEO
+    image_url = Column(String, nullable=True)
+    video_url = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 class Message(Base):
     __tablename__ = "messages"
